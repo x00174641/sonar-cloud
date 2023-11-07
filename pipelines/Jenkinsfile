@@ -22,7 +22,7 @@ pipeline {
         }
         stage('Code Linting') {
             steps {
-                bat "pwd"
+                bat "cd"
             }
         }
     }
