@@ -1,15 +1,30 @@
 pipeline {
     agent any
 
+    environment {
+        VENV = 'venv'
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
+        stage('Setup Python Environment') {
+            steps {
+                script {
+                    def venvExists = fileExists("${VENV}")
+                    if (!venvExists) {
+                        bat "python -m venv ${VENV}"
+                    }
+                    bat "${VENV}\\Scripts\\activate.bat"
+                }
+            }
+        }
         stage('Code Linting') {
             steps {
-                bat "pip install pylint"
+                    bat "pip install pylint"
             }
         }
     }
