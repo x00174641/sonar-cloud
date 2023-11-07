@@ -24,7 +24,7 @@ pipeline {
             steps {
                 bat "cd"
                 bat "dir"
-
+                bat 'venv\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/'
             }
         }
     }
