@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Code Linting') {
             steps {
-                    bat "pip install pylint"
+                    bat "pip install flask && pip install pylint"
             }
         }
     }
