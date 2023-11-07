@@ -20,11 +20,11 @@ pipeline {
                 bat "\"${env.PIP_ENV}\" install pylint"
             }
         }
-        // stage('Code Linting') {
-        //     steps {
-        //         bat "PYL"
-        //     }
-        // }
+        stage('Code Linting') {
+            steps {
+                bat "pwd"
+            }
+        }
     }
     post {
         success {
