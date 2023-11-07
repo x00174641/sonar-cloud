@@ -7,24 +7,20 @@ pipeline {
         PIP_ENV = "${env.PIP}"
     }
 
-    stages {
-        stage('Checkout') {
+   stages {
+        stage('Setup Virtual Environment') {
             steps {
-                checkout scm
+                bat '${env.PYTHON_ENV} -m venv venv'
             }
         }
-        stage('Setup Python Environment') {
+        stage('Install dependencies and Pylint') {
             steps {
-                bat "\"${env.PYTHON_ENV}\" -m venv venv"
-                bat '"venv\\Scripts\\activate"'
-                bat "\"${env.PIP_ENV}\" install pylint"
+                bat 'venv\\Scripts\\activate.bat && ${env.PIP_ENV} install --upgrade pip && ${env.PIP_ENV} install pylint'
             }
         }
-        stage('Code Linting') {
+        stage('Lint with Pylint') {
             steps {
-                bat "cd"
-                bat "dir"
-                bat 'venv\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/'
+                bat 'call venv\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/'
             }
         }
     }
