@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         VENV = 'venv'
-        PYTHON_ENV = "${env.PYTHON}"
-        PIP_ENV = "${env.PIP}"
+        PYTHON_ENV = "${env.PYTHON_ENV}"
+        PIP_ENV = "${env.PIP_ENV}"
     }
 
     stages {
@@ -15,17 +15,33 @@ pipeline {
         }
         stage('Setup Python Environment') {
             steps {
-                bat "\"${env.PYTHON_ENV}\" -m venv ${VENV}"
+                bat script: """
+                    if not exist "${VENV}" (
+                        "${PYTHON_ENV}" -m venv ${VENV}
+                    )
+                """, returnStdout: true
             }
         }
         stage('Install Pylint') {
             steps {
-                bat "call ${VENV}\\Scripts\\activate.bat && \"${env.PIP_ENV}\" install pylint"
+                bat script: """
+                    call ${VENV}\\Scripts\\activate.bat
+                    "${PIP_ENV}" install pylint
+                    if exist "${VENV}\\Scripts\\pylint.exe" (
+                        echo Pylint is installed.
+                    ) else (
+                        echo Pylint installation failed.
+                        exit 1
+                    )
+                """, returnStdout: true
             }
         }
         stage('Code Linting') {
             steps {
-                bat "call ${VENV}\\Scripts\\activate.bat && ${VENV}\\Scripts\\pylint.exe --rcfile=./pylint.rc app/"
+                bat script: """
+                    call ${VENV}\\Scripts\\activate.bat
+                    "${VENV}\\Scripts\\pylint.exe" --rcfile=./pylint.rc app/
+                """, returnStdout: true
             }
         }
     }
