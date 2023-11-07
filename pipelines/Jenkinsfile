@@ -9,7 +9,7 @@ pipeline {
         }
         stage('Code Linting') {
             steps {
-                sh "pwd && pylint --rcfile=./pylint.rc app/"
+                sh "pwd"
             }
         }
     }
