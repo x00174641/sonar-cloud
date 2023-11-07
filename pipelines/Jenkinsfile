@@ -1,21 +1,10 @@
 pipeline {
     agent any
 
-    environment {
-        VENV = 'venv'
-    }
-
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-        stage('Setup Environment') {
-            steps {
-                script {
-                    sh "source ${VENV}/bin/activate"
-                }
             }
         }
         stage('Code Linting') {
