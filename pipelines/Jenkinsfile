@@ -18,13 +18,14 @@ pipeline {
                 bat "\"${env.PYTHON_ENV}\" -m venv venv"
                 bat '"venv\\Scripts\\activate"'
                 bat "venv\\Scripts\\activate.bat && \"${env.PIP_ENV}\" install pylint"
+                bat 'pylint --rcfile=./pylint.rc app/'
             }
         }
         stage('Code Linting') {
             steps {
                 bat "cd"
                 bat "dir"
-                bat 'venv\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/'
+                bat 'pylint --rcfile=./pylint.rc app/'
             }
         }
     }
