@@ -17,7 +17,7 @@ pipeline {
             steps {
                 bat "\"${env.PYTHON_ENV}\" -m venv venv"
                 bat '"venv\\Scripts\\activate"'
-                bat "venv\\Scripts\\activate.bat && \"${env.PYTHON_ENV}\" install --upgrade pip && \"${env.PIP_ENV}\"  install pylint"
+                bat "venv\\Scripts\\activate.bat && \"${env.PIP_ENV}\" install pylint"
             }
         }
         stage('Code Linting') {
