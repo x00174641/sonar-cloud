@@ -10,17 +10,17 @@ pipeline {
    stages {
         stage('Setup Virtual Environment') {
             steps {
-                bat '\"${env.PYTHON_EXE}\" -m venv venv'
+                bat "\"${env.PYTHON_EXE}\" -m venv venv"
             }
         }
         stage('Install dependencies and Pylint') {
             steps {
-                bat 'venv\\Scripts\\activate.bat && \"${env.PIP_EXE}\" install --upgrade pip && \"${env.PIP_EXE}\"  install pylint'
+                bat "venv\\Scripts\\activate.bat && \"${env.PIP_EXE}\" install --upgrade pip && \"${env.PIP_EXE}\"  install pylint"
             }
         }
         stage('Lint with Pylint') {
             steps {
-                bat 'call venv\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/'
+                bat "call venv\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/"
             }
         }
     }
