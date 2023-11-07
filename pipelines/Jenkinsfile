@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    environment {
+        VENV = 'venv'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Setup Environment') {
+            steps {
+                script {
+                    sh "source ${VENV}/bin/activate"
+                }
+            }
+        }
+        stage('Code Linting') {
+            steps {
+                sh "source ${VENV}/bin/activate && pylint --rcfile=./pylint.rc app/"
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Success. Linting Passed.'
+        }
+        failure {
+            echo 'Error in linting'
+        }
+    }
+}
