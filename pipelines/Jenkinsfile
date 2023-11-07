@@ -10,12 +10,12 @@ pipeline {
    stages {
         stage('Setup Virtual Environment') {
             steps {
-                bat '${env.PYTHON_ENV} -m venv venv'
+                bat '\"${env.PYTHON_EXE}\" -m venv venv'
             }
         }
         stage('Install dependencies and Pylint') {
             steps {
-                bat 'venv\\Scripts\\activate.bat && ${env.PIP_ENV} install --upgrade pip && ${env.PIP_ENV} install pylint'
+                bat 'venv\\Scripts\\activate.bat && \"${env.PIP_EXE}\" install --upgrade pip && \"${env.PIP_EXE}\"  install pylint'
             }
         }
         stage('Lint with Pylint') {
