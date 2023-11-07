@@ -15,17 +15,17 @@ pipeline {
         }
         stage('Setup Python Environment') {
             steps {
-                bat "\"${env.PYTHON_ENV}\" -m venv venv"
-                bat '"venv\\Scripts\\activate"'
-                bat "venv\\Scripts\\activate.bat && \"${env.PIP_ENV}\" install pylint"
-                bat 'pylint --rcfile=./pylint.rc app/'
+                bat "\"${env.PYTHON_ENV}\" -m venv ${VENV}"
+            }
+        }
+        stage('Install Pylint') {
+            steps {
+                bat "call ${VENV}\\Scripts\\activate.bat && \"${env.PIP_ENV}\" install pylint"
             }
         }
         stage('Code Linting') {
             steps {
-                bat "cd"
-                bat "dir"
-                bat 'pylint --rcfile=./pylint.rc app/'
+                bat "call ${VENV}\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/"
             }
         }
     }
