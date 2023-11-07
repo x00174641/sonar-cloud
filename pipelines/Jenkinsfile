@@ -25,7 +25,7 @@ pipeline {
         }
         stage('Code Linting') {
             steps {
-                bat "call ${VENV}\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/"
+                bat "call ${VENV}\\Scripts\\activate.bat && ${VENV}\\Scripts\\pylint.exe --rcfile=./pylint.rc app/"
             }
         }
     }
