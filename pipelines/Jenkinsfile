@@ -23,6 +23,8 @@ pipeline {
         stage('Code Linting') {
             steps {
                 bat "cd"
+                bat "ls"
+
             }
         }
     }
