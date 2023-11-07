@@ -7,7 +7,12 @@ pipeline {
         PIP_ENV = "${env.PIP}"
     }
 
-   stages {
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
         stage('Setup Virtual Environment') {
             steps {
                 bat "\"${env.PYTHON_EXE}\" -m venv venv"
