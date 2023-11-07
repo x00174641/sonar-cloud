@@ -9,7 +9,7 @@ pipeline {
         }
         stage('Code Linting') {
             steps {
-                sh "source ${VENV}/bin/activate && pylint --rcfile=./pylint.rc app/"
+                sh "pylint --rcfile=./pylint.rc app/"
             }
         }
     }
