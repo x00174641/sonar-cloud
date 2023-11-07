@@ -4,6 +4,7 @@ pipeline {
     environment {
         VENV = 'venv'
         PYTHON_ENV = "${env.PYTHON}"
+        PIP_ENV = "${env.PIP}"
     }
 
     stages {
@@ -16,15 +17,14 @@ pipeline {
             steps {
                 bat "\"${env.PYTHON_ENV}\" -m venv venv"
                 bat '"venv\\Scripts\\activate"'
-                bat '"pip" install --upgrade pip'
-                bat '"pip" install -r requirements.txt'
+                bat "\"${env.PIP_ENV}\" install pylint"
             }
         }
-        stage('Code Linting') {
-            steps {
-                bat "pip install flask && pip install pylint"
-            }
-        }
+        // stage('Code Linting') {
+        //     steps {
+        //         bat "PYL"
+        //     }
+        // }
     }
     post {
         success {
