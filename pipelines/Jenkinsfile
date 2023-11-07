@@ -13,19 +13,18 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Setup Virtual Environment') {
+        stage('Setup Python Environment') {
             steps {
-                bat "\"${env.PYTHON_EXE}\" -m venv venv"
-            }
-        }
-        stage('Install dependencies and Pylint') {
-            steps {
+                bat "\"${env.PYTHON_ENV}\" -m venv venv"
+                bat '"venv\\Scripts\\activate"'
                 bat "venv\\Scripts\\activate.bat && \"${env.PIP_EXE}\" install --upgrade pip && \"${env.PIP_EXE}\"  install pylint"
             }
         }
-        stage('Lint with Pylint') {
+        stage('Code Linting') {
             steps {
-                bat "call venv\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/"
+                bat "cd"
+                bat "dir"
+                bat 'venv\\Scripts\\activate.bat && pylint --rcfile=./pylint.rc app/'
             }
         }
     }
