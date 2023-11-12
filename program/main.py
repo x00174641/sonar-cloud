@@ -1,6 +1,6 @@
+import getpass
 from config import OBSConfig
 from recorder import is_obs_installed
-import getpass
 
 username = getpass.getuser()
 OBS_CONFIG_PATH = f"C:\\Users\\{username}\\AppData\\Roaming\\obs-studio"

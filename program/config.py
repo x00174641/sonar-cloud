@@ -1,9 +1,9 @@
-from configparser import ConfigParser
 import os
+from configparser import ConfigParser
 
 class OBSConfig:
-    def __init__(self, dir, name):
-        self.ini_path = os.path.join(dir, name)
+    def __init__(self, directory, name):
+        self.ini_path = os.path.join(directory, name)
         self.config = ConfigParser()
         with open(self.ini_path, 'r', encoding='utf-8-sig') as f:
             self.config.read_file(f)
