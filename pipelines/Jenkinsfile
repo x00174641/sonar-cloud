@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    environment {
+        VENV = 'venv'
+        PYTHON_ENV = "${env.PYTHON}"
+        PIP_ENV = "${env.PIP}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Setup Python Environment') {
+            steps {
+                bat "\"${env.PYTHON_ENV}\" -m venv ${VENV}"
+            }
+        }
+        stage('Install Pylint') {
+            steps {
+                bat "call ${VENV}\\Scripts\\activate.bat && \"${env.PIP_ENV}\" install pylint"
+            }
+        }
+        stage('Code Linting') {
+            steps {
+                bat "call ${VENV}\\Scripts\\activate.bat && \"${env.PYTHON_ENV}\" -m pylint --rcfile=./pylint.rc program/"
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Success. Linting Passed.'
+        }
+        failure {
+            echo 'Error in linting'
+        }
+    }
+}
