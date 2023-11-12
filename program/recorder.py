@@ -3,10 +3,9 @@ import os
 import logging
 logging.basicConfig(level=logging.ERROR)
 
-def is_obs_installed(directory, name):
+def is_obs_installed(directory):
     if not os.path.isdir(directory):
         install_obs()
-    open_obs(directory, name)
 
 def install_obs():
     try:
@@ -24,12 +23,13 @@ def install_obs():
 
 def open_obs(directory, name):
     os.chdir(directory)
-    result = subprocess.run(name,
+    subprocess.Popen(name,
                    shell=True,
-                   check=True
                    )
-    if result.returncode == 0:
-        print("OBS Opened.")
-    else:
-        install_obs()
-        logging.error("Failed to open the executable. Return code: %s", result.returncode)
+
+def first_load_obs(directory, name):
+    os.chdir(directory)
+    process = subprocess.Popen(name,
+                   shell=True,
+                   )
+    process.terminate()
