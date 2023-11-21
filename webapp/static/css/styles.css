@@ -4,19 +4,9 @@ body {
     color: #fff;
 }
 
+/* Texts */
 .main-title {
     font-size: 50px;
-}
-
-.main-con {
-    margin: 0 auto;
-    max-width: 1000px;
-    margin-top: 200px;
-    text-align: center;
-}
-
-.navbar-colour {
-    background-color: #000000;
 }
 
 a {
@@ -26,6 +16,23 @@ a {
 
 a:hover {
     color: #fff;
+}
+
+.sub-text {
+    color:#999999;
+}
+
+/* Containers */
+.main-container {
+    margin: 0 auto;
+    max-width: 1000px;
+    margin-top: 200px;
+    text-align: center;
+}
+
+/* NavBars */
+.navbar-colour {
+    background-color: #000000;
 }
 
 .nav-link-text {
@@ -41,4 +48,22 @@ a:hover {
     .navbar-collapse {
       flex-grow: 0;
     }
+}
+
+/* Animations */
+@keyframes typing {
+    from { width: 0; }
+    to { width: 47%; } 
+}
+  
+@keyframes blink-caret {
+    50% { border-color: transparent; }
+}
+  
+.typing-animation {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: .10em solid white;
+    animation: typing 2s steps(28) forwards, blink-caret 1s step-end infinite;
 }
