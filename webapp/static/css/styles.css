@@ -1,5 +1,44 @@
 body {
-    background-color: #121212;
+    background-color: #030203;
     font-family: 'Poppins', sans-serif;
     color: #fff;
+}
+
+.main-title {
+    font-size: 50px;
+}
+
+.main-con {
+    margin: 0 auto;
+    max-width: 1000px;
+    margin-top: 200px;
+    text-align: center;
+}
+
+.navbar-colour {
+    background-color: #000000;
+}
+
+a {
+    text-decoration: none;
+    color: #fff;
+}
+
+a:hover {
+    color: #fff;
+}
+
+.nav-link-text {
+    color:#999999;
+}
+
+@media (min-width: 992px) { 
+    .navbar .container {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .navbar-collapse {
+      flex-grow: 0;
+    }
 }
