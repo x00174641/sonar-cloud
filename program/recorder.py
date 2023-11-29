@@ -129,13 +129,13 @@ def process_latest_video():
         if duration is None:
             raise Exception("Unable to get video duration")
 
-        if duration > 30:
-            start_time = duration - 30
+        if duration > 20:
+            start_time = duration - 20
             output_filename = os.path.join(clips_folder_path, f"{random.randint(1, 1930183912434131)}.mp4")
-            subprocess.run(["ffmpeg", "-i", latest_video, "-ss", str(start_time), "-t", "30", "-c", "copy", output_filename], check=True)
+            subprocess.run(["ffmpeg", "-i", latest_video, "-ss", str(start_time), "-t", "20", "-c", "copy", output_filename], check=True)
             print(f"Video trimmed successfully and saved as {output_filename}")
         else:
-            print("Video is less than 30 seconds long, no trimming needed.")
+            print("Video is less than 20 seconds long, no trimming needed.")
 
     except Exception as e:
         print(e)

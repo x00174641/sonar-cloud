@@ -7,7 +7,7 @@ from recorder import is_obs_installed, open_obs, ws_connection, wait_for_obs, pr
 username = getpass.getuser()
 
 def main():
-    try:
+    
         logging.basicConfig(level=logging.INFO)
         # Paths
         OBS_DIR_PATH = "C:\\Program Files\\obs-studio\\bin\\64bit\\"
@@ -18,19 +18,16 @@ def main():
         is_ffmpeg_installed(FFMPEG_DIR_PATH)
         open_obs(OBS_DIR_PATH, OBS_EXE_NAME)
         wait_for_obs()
-        ws = ws_connection()
-        ws.start_record()
-
-        while True:
-            if keyboard.is_pressed("f2"):
+        try:
+            ws = ws_connection()
+            ws.start_record()
+            keyboard.add_hotkey('f2', lambda: [ws.stop_record(), time.sleep(2), process_latest_video(), time.sleep(0.9), ws.start_record()])
+            keyboard.wait('ctrl+shift+f2')
+            if keyboard.is_pressed("ctrl+shift+f2"):
                 ws.stop_record()
-                time.sleep(2)
-                process_latest_video()
-                time.sleep(0.9)
-                ws.start_record()
-    except KeyboardInterrupt:
-        ws.stop_record()
-        pass
+        except KeyboardInterrupt:
+            ws.stop_record()
+            pass
 
 if __name__ == "__main__":
     main()
