@@ -26,16 +26,22 @@
             </div>
           </div>
           <button class="btn btn btn-light my-2 my-sm-0">Download Software</button>
+          {% if username %}
+          <a href="/"><button class="btn btn-light my-2 my-sm-0">My Account</button></a>
+          {% else %}
+           <a href="/login"><button class="btn btn-light my-2 my-sm-0">Login</button></a>
+           {% endif %}
         </div>
       </nav>
-      
     <div class="main-container">
     <h1 class="main-title typing-animation text-center">CLIPR. technology</h1>
     <p class="mt-4 sub-text">Total Clips Splyced</p>
     <h4>0</h4>
     <h3 class="mt-5">About CLIPR.</h3>
     <p class="sub-text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-    <button class="btn btn btn-light my-2 my-sm-0">Get Started</button>
+     {% if  not username %}
+      <a href="/signup"><button class="btn btn-light my-2 my-sm-0">Get Started</button></a>
+      {% endif %}
     </div>
 </body>
 </html>

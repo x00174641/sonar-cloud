@@ -1,5 +1,5 @@
 body {
-    background-color: #030203;
+    background-color: #030207;
     font-family: 'Poppins', sans-serif;
     color: #fff;
 }
@@ -21,7 +21,12 @@ a:hover {
 .sub-text {
     color:#999999;
 }
-
+.text-green {
+    color: #61c2b6;
+}
+.text-yellow {
+    color: #f1e59e;
+}
 /* Containers */
 .main-container {
     margin: 0 auto;
@@ -66,4 +71,18 @@ a:hover {
     white-space: nowrap;
     border-right: .10em solid white;
     animation: typing 2s steps(28) forwards, blink-caret 1s step-end infinite;
+}
+
+/* Backgrounds */
+.card-background {
+    background-color: #030207;
+}
+
+/* Buttons */
+.register-button {
+    background-color: #f1e59e;
+}
+
+.login-button {
+    background-color: #61c2b6;
 }

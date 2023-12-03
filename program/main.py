@@ -1,37 +1,33 @@
-import getpass
-import configparser
 import logging
-import obsws_python as obs
-from config import OBSConfig
-from recorder import is_obs_installed, open_obs
-logging.basicConfig(level=logging.INFO)
+import keyboard
+import time
+import getpass
+from recorder import is_obs_installed, open_obs, ws_connection, wait_for_obs, process_latest_video, is_ffmpeg_installed
+
 username = getpass.getuser()
-# User Settings
-config = configparser.ConfigParser()
-ini_path = "program\\user_config.ini"
-config.read(ini_path)
-FirstTimeLoad = config.get('USER CONTROL', 'FirstTimeLoadUp')
-# Paths
-OBS_CONFIG_PATH = f"C:\\Users\\{username}\\AppData\\Roaming\\obs-studio"
-OBS_CONFIG_NAME = "global.ini"
-OBS_DIR_PATH = "C:\\Program Files\\obs-studio\\bin\\64bit\\"
-OBS_EXE_NAME = "obs64.exe"
-# OBS Settings
-host = "localhost"
-obs_config = OBSConfig(OBS_CONFIG_PATH,OBS_CONFIG_NAME)
-obs_ws_status = obs_config.websocket_status
-obs_websocket_port = int(obs_config.websocket_port)
-obs_websocket_password = obs_config.websocket_password
-is_obs_installed(OBS_DIR_PATH)
-print(type(obs_websocket_password))
-# Generates Global.ini File.
-# if FirstTimeLoad:
-#     first_load_obs(OBS_DIR_PATH,OBS_EXE_NAME)
 
-if obs_ws_status == 'false':
-    obs_config.websocket_status = 'true'
-    obs_config.save()
+def main():
+    
+        logging.basicConfig(level=logging.INFO)
+        # Paths
+        OBS_DIR_PATH = "C:\\Program Files\\obs-studio\\bin\\64bit\\"
+        FFMPEG_DIR_PATH = f"C:\\Users\\{username}\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        OBS_EXE_NAME = "obs64.exe"
 
-open_obs(OBS_DIR_PATH,OBS_EXE_NAME)
-# Connection to WebSocket
-ws = obs.ReqClient(host=host, port=obs_websocket_port, password=obs_websocket_password, timeout=3)
+        is_obs_installed(OBS_DIR_PATH)
+        is_ffmpeg_installed(FFMPEG_DIR_PATH)
+        open_obs(OBS_DIR_PATH, OBS_EXE_NAME)
+        wait_for_obs()
+        try:
+            ws = ws_connection()
+            ws.start_record()
+            keyboard.add_hotkey('f2', lambda: [ws.stop_record(), time.sleep(2), process_latest_video(), time.sleep(0.9), ws.start_record()])
+            keyboard.wait('ctrl+shift+f2')
+            if keyboard.is_pressed("ctrl+shift+f2"):
+                ws.stop_record()
+        except KeyboardInterrupt:
+            ws.stop_record()
+            pass
+
+if __name__ == "__main__":
+    main()
