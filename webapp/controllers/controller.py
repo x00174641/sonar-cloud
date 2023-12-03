@@ -56,7 +56,6 @@ def login():
                 },
                 ClientId=client_id
             )
-
             session['access_token'] = response['AuthenticationResult']['AccessToken']
             if 'AccessToken' in response['AuthenticationResult']:
                 session['access_token'] = response['AuthenticationResult']['AccessToken']

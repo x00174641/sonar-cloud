@@ -8,6 +8,7 @@ import psutil
 import glob
 import random
 from config import OBSConfig
+from request import upload_video_to_s3
 logging.basicConfig(level=logging.ERROR)
 username = getpass.getuser()
 OBS_CONFIG_PATH = f"C:\\Users\\{username}\\AppData\\Roaming\\obs-studio"
@@ -131,12 +132,17 @@ def process_latest_video():
 
         if duration > 20:
             start_time = duration - 20
-            output_filename = os.path.join(clips_folder_path, f"{random.randint(1, 1930183912434131)}.mp4")
+            random_url = random.randint(1, 1930183912434131)
+            output_filename = os.path.join(clips_folder_path, f"{random_url}.mp4")
             subprocess.run(["ffmpeg", "-i", latest_video, "-ss", str(start_time), "-t", "20", "-c", "copy", output_filename], check=True)
             print(f"Video trimmed successfully and saved as {output_filename}")
+            compressed_output_filename = os.path.join(clips_folder_path, f"compressed_{random_url}.mp4")
+            subprocess.run(["ffmpeg", "-i", output_filename, "-b:v", "800k", "-y", compressed_output_filename], check=True)
+            print(f"Video compressed successfully and saved as {compressed_output_filename}")            
+            upload_video_to_s3(compressed_output_filename,f"videos/{random_url}.mp4")
+            print(random_url)
         else:
             print("Video is less than 20 seconds long, no trimming needed.")
-
     except Exception as e:
         print(e)
         logging.error(f"Error processing video: {e}")
