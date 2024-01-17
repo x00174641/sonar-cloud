@@ -3,6 +3,8 @@ import requests
 import json
 from dotenv import load_dotenv
 import configparser
+import base64
+
 load_dotenv()
 aws_access_key_id = os.getenv('ACCESS_KEY')
 aws_secret_access_key = os.getenv('SECRET_KEY')
@@ -45,19 +47,29 @@ def retrieve_id_token():
 def upload_video_to_s3(local_video_file_path, s3_key):
     local_video_file_path = local_video_file_path.replace('\\', '/')
     id_token = retrieve_id_token()
-    with open(local_video_file_path, 'rb') as video_file:
-        files = {
-            'file': (s3_key, video_file, 'video/mp4')
-        }
-        headers = {
-            'clipr_auth_token': id_token
-        }
-        response = requests.post("https://wso98fmze8.execute-api.us-east-1.amazonaws.com/Dev/post/",
-                                 files=files, headers=headers)
 
-    print("Response:", response.text)
+    with open(local_video_file_path, 'rb') as video_file:
+        video_content = video_file.read()
+        encoded_video = base64.b64encode(video_content).decode('utf-8')
+
+    payload = json.dumps({
+        'file_content': encoded_video,
+        'file_name': s3_key
+    })
+
+    headers = {
+        'clipr_auth_token': id_token,
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.post(
+        "https://wso98fmze8.execute-api.us-east-1.amazonaws.com/Dev/post/",
+        data=payload,
+        headers=headers
+    )
     try:
-        print(response.json())
+        response_data = response.json()
+        print(response_data)
     except ValueError as e:
         print("Error parsing JSON:", e)
     print("Status Code:", response.status_code)
