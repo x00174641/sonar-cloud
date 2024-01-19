@@ -54,7 +54,8 @@ def upload_video_to_s3(local_video_file_path, s3_key):
 
     payload = json.dumps({
         'file_content': encoded_video,
-        'file_name': s3_key
+        'file_name': s3_key,
+        'username': username
     })
 
     headers = {

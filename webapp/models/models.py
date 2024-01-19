@@ -11,7 +11,11 @@ def configure():
 
 client_id = os.getenv('COGNITO_APP_CLIENT_ID')
 client_secret = os.getenv('COGNITO_APP_CLIENT_SECRET')
+access_key = os.getenv('ACCESS_KEY')
+access_secret = os.getenv('SECRET_KEY')
 client = boto3.client('cognito-idp', "us-east-1")
+dynamodb = boto3.resource('dynamodb',"us-east-1", aws_access_key_id=access_key, aws_secret_access_key=access_secret)
+table = dynamodb.Table('cliprDB')
 
 def create_user(username, email, password):
     try:
@@ -30,6 +34,8 @@ def create_user(username, email, password):
             UserAttributes=user_attributes,
             SecretHash=secret_hash
         )
+        table.put_item(Item={'username': username, 'email': email, 'videos': []})
+
         return True
     except ClientError as e:
         print(f"Error: {e}")
