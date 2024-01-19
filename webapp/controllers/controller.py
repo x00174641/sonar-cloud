@@ -15,7 +15,7 @@ client = boto3.client('cognito-idp', "us-east-1")
 access_key = os.getenv('ACCESS_KEY')
 access_secret = os.getenv('SECRET_KEY')
 dynamodb = boto3.resource('dynamodb',"us-east-1", aws_access_key_id=access_key, aws_secret_access_key=access_secret)
-table = dynamodb.Table('cliprDB')
+table = dynamodb.Table('cliprVideoDB')
 
 # Routes 
 @app.route('/')
@@ -80,13 +80,13 @@ def login():
 def video(videoID):
     try:
         response = table.scan(
-            FilterExpression=Attr('videos').contains("videos/" + videoID)
+            FilterExpression=Attr('videoID').contains(videoID)
         )
         items = response.get('Items', [])
-        if not items:
+        if not items or items[0].get('public') == False:
             return render_template('index.html') # replace with 404 page once i build that
         else:
-            username = items[0].get('username')
+            username = items[0].get('owner')
             video_url = f"https://cliprbucket.s3.amazonaws.com/videos/videos/{videoID}"
         return render_template('videos.html', video_url=video_url, username=username)
 
