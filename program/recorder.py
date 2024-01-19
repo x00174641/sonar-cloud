@@ -139,7 +139,7 @@ def process_latest_video():
             compressed_output_filename = os.path.join(clips_folder_path, f"compressed_{random_url}.mp4")
             subprocess.run(["ffmpeg", "-i", output_filename, "-b:v", "800k", "-y", compressed_output_filename], check=True)
             print(f"Video compressed successfully and saved as {compressed_output_filename}")  
-            upload_video_to_s3(compressed_output_filename, f"videos/{random_url}.mp4")
+            upload_video_to_s3(compressed_output_filename, f"videos/{random_url}")
             print(random_url)
         else:
             print("Video is less than 20 seconds long, no trimming needed.")
