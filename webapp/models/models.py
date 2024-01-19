@@ -14,10 +14,7 @@ client_secret = os.getenv('COGNITO_APP_CLIENT_SECRET')
 access_key = os.getenv('ACCESS_KEY')
 access_secret = os.getenv('SECRET_KEY')
 client = boto3.client('cognito-idp', "us-east-1")
-dynamodb = boto3.resource('dynamodb',"us-east-1", aws_access_key_id=access_key, 
-             aws_secret_access_key=access_secret)
-dynamodb_client = boto3.client('dynamodb', "us-east-1", aws_access_key_id=access_key, 
-             aws_secret_access_key=access_secret)
+dynamodb = boto3.resource('dynamodb',"us-east-1", aws_access_key_id=access_key, aws_secret_access_key=access_secret)
 table = dynamodb.Table('cliprDB')
 
 def create_user(username, email, password):
