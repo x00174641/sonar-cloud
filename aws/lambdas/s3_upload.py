@@ -10,6 +10,11 @@ def lambda_handler(event, context):
     username = event["username"]
     get_file_content = event['file_content']
 
+    video_attrs = {
+        'url': file_name,
+        'public': False
+    }
+
     decode_content = base64.b64decode(get_file_content)
 
     s3.put_object(
@@ -21,8 +26,8 @@ def lambda_handler(event, context):
     
     table.update_item(
         Key={'username': username},
-        UpdateExpression="SET videos = list_append(if_not_exists(videos, :empty_list), :new_file)",
-        ExpressionAttributeValues={':new_file': [file_name],':empty_list': []},
+        UpdateExpression="SET videos = list_append(if_not_exists(videos, :empty_list), :new_video)",
+        ExpressionAttributeValues={':new_video': [video_attrs], ':empty_list': []},
     )
 
     return {"statusCode": 200, "body": json.dumps("Successfully uploaded video.")}
