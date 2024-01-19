@@ -83,11 +83,15 @@ def video(videoID):
             FilterExpression=Attr('videoID').contains(videoID)
         )
         items = response.get('Items', [])
-        if not items or items[0].get('public') == False:
-            return render_template('index.html') # replace with 404 page once i build that
-        else:
-            username = items[0].get('owner')
-            video_url = f"https://cliprbucket.s3.amazonaws.com/videos/videos/{videoID}"
+        if not items:
+            return redirect(url_for('index')) # replace with 404 page once i build that
+        if session.get('username') != items[0].get('owner'):
+            return redirect(url_for('index')) 
+        if items[0].get('public') == False and session.get('username') != items[0].get('owner'):
+            return redirect(url_for('index')) 
+        
+        username = items[0].get('owner')
+        video_url = f"https://cliprbucket.s3.amazonaws.com/videos/videos/{videoID}"
         return render_template('videos.html', video_url=video_url, username=username)
 
     except Exception as e:
