@@ -15,6 +15,7 @@ client = boto3.client('cognito-idp', "us-east-1")
 access_key = os.getenv('ACCESS_KEY')
 access_secret = os.getenv('SECRET_KEY')
 dynamodb = boto3.resource('dynamodb',"us-east-1", aws_access_key_id=access_key, aws_secret_access_key=access_secret)
+user_profile_table = dynamodb.Table('cliprDB')
 table = dynamodb.Table('cliprVideoDB')
 
 # Routes 
@@ -94,5 +95,21 @@ def video(videoID):
         video_url = f"https://cliprbucket.s3.amazonaws.com/videos/videos/{videoID}"
         return render_template('videos.html', video_url=video_url, username=username)
 
+    except Exception as e:
+        return str(e), 500
+    
+@app.route('/user/channel/<username>')
+def user_profile(username): 
+    try:
+        video_list = []
+        response = user_profile_table.scan(FilterExpression=Attr('channelName').contains(username))
+        print(response)
+        items = response.get('Items', [])
+        if not items:
+            return redirect(url_for('index')) # replace with 404 page once i build that 
+        username = items[0].get('username')
+        for i in reversed(items[0].get('videos')):
+            video_list.append(i.replace('videos/',''))
+        return render_template('profiles.html', video_list=video_list, username=username)
     except Exception as e:
         return str(e), 500
