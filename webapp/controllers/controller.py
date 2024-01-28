@@ -39,19 +39,18 @@ def signup():
             flash('Account creation failed. Please try again.', 'error')
     return render_template('signup.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
-    username = session.get('username')
-    if username:
-        return redirect(url_for('index'))
-    
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+
         secret_hash = base64.b64encode(hmac.new(
             bytes(client_secret, 'utf-8'),
             bytes(username + client_id, 'utf-8'),
             digestmod=hashlib.sha256).digest()).decode()
+
         try:
             response = client.initiate_auth(
                 AuthFlow='USER_PASSWORD_AUTH',
@@ -63,19 +62,20 @@ def login():
                 ClientId=client_id
             )
             session['access_token'] = response['AuthenticationResult']['AccessToken']
-            if 'AccessToken' in response['AuthenticationResult']:
-                session['access_token'] = response['AuthenticationResult']['AccessToken']
-                session['username'] = username
-                return redirect(url_for('index'))
+            return jsonify({
+                'success': True,
+                'accessToken': response['AuthenticationResult']['AccessToken'],
+                'username': username
+            }), 200
 
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == 'UserNotConfirmedException':
-                flash('Your account is not confirmed. Please check your email for the confirmation link.', 'error')
+                return jsonify({'error': 'Account not confirmed'}), 403
             else:
-                flash('Login failed. Please check your username and password.', 'error')
-                print(f"Error: {e}")
-    return render_template('login.html')
+                return jsonify({'error': 'Login failed'}), 401
+
+    return jsonify({'message': 'Invalid request method'}), 405
 
 @app.route('/videos/<videoID>')
 def video(videoID):
@@ -113,3 +113,9 @@ def user_profile(username):
         return render_template('profiles.html', video_list=video_list, username=username)
     except Exception as e:
         return str(e), 500
+
+@app.route('/statistics')
+def statistics():
+    response = table.scan()
+    json = {"totalVideosClipped": response['Count']}
+    return json
