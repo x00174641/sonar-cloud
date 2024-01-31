@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import {
   Dialog,
   DialogContent,
@@ -10,10 +9,14 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from '@/components/ui/button'
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const { setIsAuthenticated } = useAuth();
 
   const handleLogin = async () => {
     try {
@@ -24,13 +27,18 @@ function Login() {
         },
         body: JSON.stringify({ username, password })
       });
-  
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-  
-      const data = await response.json();
-      localStorage.setItem('accessToken', data.accessToken);
+
+      if (response.status === 200) {
+        const data = await response.json();
+        localStorage.setItem('accessToken', data.accessToken);
+        setIsAuthenticated(true);
+        navigate('/');
+        window.location.reload(true);
+      }
     } catch (error) {
       console.error('Login failed:', error);
     }

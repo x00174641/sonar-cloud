@@ -1,41 +1,29 @@
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuIndicator,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    NavigationMenuViewport,
-  } from "@/components/ui/navigation-menu"
-import { Button } from '@/components/ui/button'
-import { ModeToggle } from "@/components/mode-toggle"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Login from "@/components/Login"
-import Signup from "@/components/Signup"
+import React from 'react';
+import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
+import { ModeToggle } from "@/components/mode-toggle";
+import Login from "@/components/Login";
+import Signup from "@/components/Signup";
 const containerStyle = {
     fontSize: '1.1rem',
     margin: '0 auto',
     maxWidth: '550px',
     marginTop: '30px',
 };
+import { useAuth } from './AuthContext';
 
 function Header() {
+    const { isAuthenticated, setIsAuthenticated } = useAuth();
+
+    const logout = () => {
+        localStorage.removeItem('accessToken');
+        setIsAuthenticated(false);
+        window.location.reload(true);
+    };
+
     return (
         <header style={containerStyle}>
-            
             <NavigationMenu>
                 <NavigationMenuList>
-                    
                     <NavigationMenuItem>
                         <div className="text-2xl font-bold px-4 py-2">
                             CLIPR
@@ -54,20 +42,35 @@ function Header() {
                         </div>
                     </NavigationMenuItem>
 
-                    <NavigationMenuItem>
-                    <Login/>
-                    </NavigationMenuItem>
-
-                    <NavigationMenuItem>
-                        <Signup/>
-                    </NavigationMenuItem>
+                    {isAuthenticated ? (
+                        <>
+                            <NavigationMenuItem>
+                                <div className="px-4 py-2">
+                                    <h1 className="text-muted-foreground">Profile</h1>
+                                </div>
+                            </NavigationMenuItem>
+                            <NavigationMenuItem>
+                                <div className="px-4 py-2" onClick={logout}>
+                                    <h1 className="text-muted-foreground">Logout</h1>
+                                </div>
+                            </NavigationMenuItem>
+                        </>
+                    ) : (
+                        <>
+                            <NavigationMenuItem>
+                                <Login />
+                            </NavigationMenuItem>
+                            <NavigationMenuItem>
+                                <Signup />
+                            </NavigationMenuItem>
+                        </>
+                    )}
 
                     <NavigationMenuItem>
                         <div className="px-4 py-2">
                             <ModeToggle />
                         </div>
                     </NavigationMenuItem>
-
                 </NavigationMenuList>
             </NavigationMenu>
         </header>

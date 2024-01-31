@@ -1,21 +1,18 @@
-import { useState } from 'react'
-import  Home  from "@/components/Header"
-import { ThemeProvider } from "@/components/theme-provider"
-import Container from './components/ui/container'
-import Homepage from './components/Homepage'
-function App() {
-  const [count, setCount] = useState(0)
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Index from './components/Index';
+import { AuthProvider } from './components/AuthContext';
 
+function App() {
   return (
-    <div class="App">
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <Home/>
-        <Container>
-          <Homepage/>
-        </Container>
-    </ThemeProvider>
-    </div>
-  )
+    <AuthProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Index />} />
+      </Routes>
+    </Router>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

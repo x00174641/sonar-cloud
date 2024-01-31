@@ -74,7 +74,6 @@ def login():
                 return jsonify({'error': 'Account not confirmed'}), 403
             else:
                 return jsonify({'error': 'Login failed'}), 401
-
     return jsonify({'message': 'Invalid request method'}), 405
 
 @app.route('/videos/<videoID>')
@@ -110,7 +109,11 @@ def user_profile(username):
         username = items[0].get('username')
         for i in reversed(items[0].get('videos')):
             video_list.append(i.replace('videos/',''))
-        return render_template('profiles.html', video_list=video_list, username=username)
+        return jsonify({
+                'success': True,
+                'video_list': video_list,
+                'username': username
+            }), 200
     except Exception as e:
         return str(e), 500
 
