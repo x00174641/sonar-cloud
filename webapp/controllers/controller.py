@@ -88,11 +88,13 @@ def video(videoID):
         items = response.get('Items', [])
         username = items[0].get('owner')
         total_views = items[0].get('total_views')
+        uploaded_date = items[0].get('upload_date')
         if not total_views:
             total_views = 0
         return jsonify({
                 'username': username,
-                'total_views': total_views
+                'total_views': total_views,
+                'uploaded_date': uploaded_date
             }), 200
 
     except Exception as e:

@@ -120,7 +120,7 @@ function Profile() {
                 </DialogTrigger>
                 <CardDescription>
                   <div className="flex items-center">
-                    <p className='ml-7 mt-4'>{videoInfo[video]?.total_views} views</p>
+                    <p className='ml-7 mt-4'>{videoInfo[video]?.total_views} views | Uploaded on {videoInfo[video]?.uploaded_date}</p>
                     <Drawer>
                       <DrawerTrigger asChild>
                         <FaChartLine className='ml-7 mt-4' size={18} />
