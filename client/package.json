@@ -30,7 +30,8 @@
     "react-type-animation": "^3.2.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "tsconfig-paths": "^4.2.0"
+    "tsconfig-paths": "^4.2.0",
+    "vaul": "^0.8.9"
   },
   "devDependencies": {
     "@types/node": "^20.11.12",

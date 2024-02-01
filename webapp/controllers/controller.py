@@ -3,6 +3,8 @@ import os
 import hmac
 import hashlib
 import base64
+import requests
+import json
 from botocore.exceptions import ClientError
 from webapp import app
 from flask import render_template, request, flash, redirect, url_for , session, jsonify
@@ -17,6 +19,7 @@ access_secret = os.getenv('SECRET_KEY')
 dynamodb = boto3.resource('dynamodb',"us-east-1", aws_access_key_id=access_key, aws_secret_access_key=access_secret)
 user_profile_table = dynamodb.Table('cliprDB')
 table = dynamodb.Table('cliprVideoDB')
+
 
 # Routes 
 @app.route('/')
@@ -83,16 +86,14 @@ def video(videoID):
             FilterExpression=Attr('videoID').contains(videoID)
         )
         items = response.get('Items', [])
-        if not items:
-            return redirect(url_for('index')) # replace with 404 page once i build that
-        if session.get('username') != items[0].get('owner'):
-            return redirect(url_for('index')) 
-        if items[0].get('public') == False and session.get('username') != items[0].get('owner'):
-            return redirect(url_for('index')) 
-        
         username = items[0].get('owner')
-        video_url = f"https://cliprbucket.s3.amazonaws.com/videos/videos/{videoID}"
-        return render_template('videos.html', video_url=video_url, username=username)
+        total_views = items[0].get('total_views')
+        if not total_views:
+            total_views = 0
+        return jsonify({
+                'username': username,
+                'total_views': total_views
+            }), 200
 
     except Exception as e:
         return str(e), 500
@@ -122,3 +123,13 @@ def statistics():
     response = table.scan()
     json = {"totalVideosClipped": response['Count']}
     return json
+
+@app.route('/view_increment/<videoID>', methods=['POST'])
+def update_views(videoID):
+    video_data = request.get_json()
+    video_id = video_data['videoID']
+    data_to_send = json.dumps({'videoID': video_id})
+    response = requests.post('https://a255z88ipi.execute-api.us-east-1.amazonaws.com/dev/Views', data=data_to_send)
+    print(response.text)
+    return response.text 
+    

@@ -3,21 +3,26 @@ import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/compon
 import { ModeToggle } from "@/components/mode-toggle";
 import Login from "@/components/Login";
 import Signup from "@/components/Signup";
+import { useAuth } from './AuthContext';
+import { useToast } from "@/components/ui/use-toast"
 const containerStyle = {
     fontSize: '1.1rem',
     margin: '0 auto',
-    maxWidth: '550px',
+    maxWidth: '450px',
     marginTop: '30px',
 };
-import { useAuth } from './AuthContext';
-
 function Header() {
     const { isAuthenticated, setIsAuthenticated } = useAuth();
+    const { toast } = useToast();
 
     const logout = () => {
         localStorage.removeItem('accessToken');
         setIsAuthenticated(false);
-        window.location.reload(true);
+        toast({
+            title: "Logout Successful",
+            description: "You are now logged out.",
+            status: "success",
+          });
     };
 
     return (
@@ -36,19 +41,8 @@ function Header() {
                         </div>
                     </NavigationMenuItem>
 
-                    <NavigationMenuItem>
-                        <div className="px-4 py-2">
-                            <h1 className="text-muted-foreground">About</h1>
-                        </div>
-                    </NavigationMenuItem>
-
                     {isAuthenticated ? (
                         <>
-                            <NavigationMenuItem>
-                                <div className="px-4 py-2">
-                                    <h1 className="text-muted-foreground">Profile</h1>
-                                </div>
-                            </NavigationMenuItem>
                             <NavigationMenuItem>
                                 <div className="px-4 py-2" onClick={logout}>
                                     <h1 className="text-muted-foreground">Logout</h1>
