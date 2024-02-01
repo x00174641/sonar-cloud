@@ -89,12 +89,15 @@ def video(videoID):
         username = items[0].get('owner')
         total_views = items[0].get('total_views')
         uploaded_date = items[0].get('upload_date')
+        views_date_data = items[0].get('views')
+        print(views_date_data)
         if not total_views:
             total_views = 0
         return jsonify({
                 'username': username,
                 'total_views': total_views,
-                'uploaded_date': uploaded_date
+                'uploaded_date': uploaded_date,
+                'views_data': views_date_data
             }), 200
 
     except Exception as e:
@@ -130,8 +133,20 @@ def statistics():
 def update_views(videoID):
     video_data = request.get_json()
     video_id = video_data['videoID']
-    data_to_send = json.dumps({'videoID': video_id})
-    response = requests.post('https://a255z88ipi.execute-api.us-east-1.amazonaws.com/dev/Views', data=data_to_send)
-    print(response.text)
-    return response.text 
-    
+    username = video_data.get('username')
+    video_scan = table.scan(FilterExpression=Attr('videoID').contains(videoID))
+    items = video_scan.get('Items', [])
+
+    if not items:
+        return jsonify({'error': 'Video not found'}), 404
+
+    owner = items[0].get('owner')
+    if username.lower() == owner.lower():
+        return jsonify({'message': 'View increment not allowed for owner'}), 200
+    else:
+        data_to_send = json.dumps({'videoID': video_id})
+        response = requests.post('https://a255z88ipi.execute-api.us-east-1.amazonaws.com/dev/Views', data=data_to_send)
+        if response.status_code == 200:
+            return jsonify({'message': 'View count incremented'}), 200
+        else:
+            return jsonify({'error': 'Failed to increment view count'}), 500
