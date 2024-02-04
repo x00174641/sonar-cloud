@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/use-toast"
 const containerStyle = {
     fontSize: '1.1rem',
     margin: '0 auto',
-    maxWidth: '450px',
+    maxWidth: '550px',
     marginTop: '30px',
 };
 function Header() {
@@ -37,7 +37,7 @@ function Header() {
 
                     <NavigationMenuItem>
                         <div className="px-4 py-2">
-                            <h1 className="text-muted-foreground">Home</h1>
+                            <h1 className="text-muted-foreground hover:text-gray-600 cursor-pointer">Discover</h1>
                         </div>
                     </NavigationMenuItem>
 
@@ -45,7 +45,7 @@ function Header() {
                         <>
                             <NavigationMenuItem>
                                 <div className="px-4 py-2" onClick={logout}>
-                                    <h1 className="text-muted-foreground">Logout</h1>
+                                    <h1 className="text-muted-foreground hover:text-gray-600 cursor-pointer">Logout</h1>
                                 </div>
                             </NavigationMenuItem>
                         </>

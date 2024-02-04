@@ -5,6 +5,7 @@ import hashlib
 import base64
 import requests
 import json
+import jwt
 from botocore.exceptions import ClientError
 from webapp import app
 from flask import render_template, request, flash, redirect, url_for , session, jsonify
@@ -20,7 +21,6 @@ dynamodb = boto3.resource('dynamodb',"us-east-1", aws_access_key_id=access_key, 
 user_profile_table = dynamodb.Table('cliprDB')
 table = dynamodb.Table('cliprVideoDB')
 
-
 # Routes 
 @app.route('/')
 def index():
@@ -29,18 +29,17 @@ def index():
         return render_template('index.html', username=username)
     return render_template('index.html')
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/signup', methods=['POST'])
 def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-        if create_user(username, email, password):
-            flash('Account created successfully. Please check your email for confirmation.', 'success')
-            return redirect(url_for('login'))
-        else:
-            flash('Account creation failed. Please try again.', 'error')
-    return render_template('signup.html')
+    data = request.json
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+
+    if create_user(username, email, password):
+        return jsonify({'message': 'Account created successfully. Please check your email to verify your account.'}), 200
+    else:
+        return jsonify({'message': 'Account creation failed. Please try again.'}), 400
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -150,3 +149,56 @@ def update_views(videoID):
             return jsonify({'message': 'View count incremented'}), 200
         else:
             return jsonify({'error': 'Failed to increment view count'}), 500
+    
+@app.route('/update/clipr/software/', methods=['POST'])
+def update_software():
+    data = request.json
+    token = data.get('accessToken')
+
+    try:
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        username = decoded.get('username')
+        print(username)
+        clip_interval = data.get('clip_interval')
+        clip_hotkey = data.get('clip_hotkey')
+        obs_port = data.get('obs_port')
+
+        update_response = user_profile_table.update_item(
+            Key={
+                'username': username
+            },
+            UpdateExpression="SET clip_interval = :ci, clip_hotkey = :ch, obs_port = :op",
+            ExpressionAttributeValues={
+                ':ci': clip_interval,
+                ':ch': clip_hotkey,
+                ':op': obs_port
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+        
+        return jsonify({'message': update_response}), 200
+    
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token has expired'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token'}), 401
+    except Exception as e:
+        print(e)
+        return jsonify({'message': 'An error occurred'}), 500 
+
+@app.route('/user/settings', methods=['GET'])
+def fetch_user_settings():
+    token = request.headers.get('Authorization').split(" ")[1]
+    try:
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        username = decoded.get('username')
+        response = user_profile_table.scan(FilterExpression=Attr('username').contains(username))
+        items = response.get('Items', [])
+        if items:
+            clip_interval = items[0].get('clip_interval')
+            clip_hotkey = items[0].get('clip_hotkey')
+            obs_port = items[0].get('obs_port')
+            return jsonify({'clip_interval': clip_interval, 'clip_hotkey': clip_hotkey, 'obs_port': obs_port})
+        return jsonify({'message': 'User settings not found'}), 404
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
