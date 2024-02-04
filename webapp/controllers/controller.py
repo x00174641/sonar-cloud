@@ -3,6 +3,9 @@ import os
 import hmac
 import hashlib
 import base64
+import requests
+import json
+import jwt
 from botocore.exceptions import ClientError
 from webapp import app
 from flask import render_template, request, flash, redirect, url_for , session, jsonify
@@ -26,32 +29,30 @@ def index():
         return render_template('index.html', username=username)
     return render_template('index.html')
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/signup', methods=['POST'])
 def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-        if create_user(username, email, password):
-            flash('Account created successfully. Please check your email for confirmation.', 'success')
-            return redirect(url_for('login'))
-        else:
-            flash('Account creation failed. Please try again.', 'error')
-    return render_template('signup.html')
+    data = request.json
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
 
-@app.route('/login', methods=['GET', 'POST'])
+    if create_user(username, email, password):
+        return jsonify({'message': 'Account created successfully. Please check your email to verify your account.'}), 200
+    else:
+        return jsonify({'message': 'Account creation failed. Please try again.'}), 400
+
+@app.route('/login', methods=['POST'])
 def login():
-    username = session.get('username')
-    if username:
-        return redirect(url_for('index'))
-    
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+
         secret_hash = base64.b64encode(hmac.new(
             bytes(client_secret, 'utf-8'),
             bytes(username + client_id, 'utf-8'),
             digestmod=hashlib.sha256).digest()).decode()
+
         try:
             response = client.initiate_auth(
                 AuthFlow='USER_PASSWORD_AUTH',
@@ -63,19 +64,19 @@ def login():
                 ClientId=client_id
             )
             session['access_token'] = response['AuthenticationResult']['AccessToken']
-            if 'AccessToken' in response['AuthenticationResult']:
-                session['access_token'] = response['AuthenticationResult']['AccessToken']
-                session['username'] = username
-                return redirect(url_for('index'))
+            return jsonify({
+                'success': True,
+                'accessToken': response['AuthenticationResult']['AccessToken'],
+                'username': username
+            }), 200
 
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == 'UserNotConfirmedException':
-                flash('Your account is not confirmed. Please check your email for the confirmation link.', 'error')
+                return jsonify({'error': 'Account not confirmed'}), 403
             else:
-                flash('Login failed. Please check your username and password.', 'error')
-                print(f"Error: {e}")
-    return render_template('login.html')
+                return jsonify({'error': 'Login failed'}), 401
+    return jsonify({'message': 'Invalid request method'}), 405
 
 @app.route('/videos/<videoID>')
 def video(videoID):
@@ -84,16 +85,19 @@ def video(videoID):
             FilterExpression=Attr('videoID').contains(videoID)
         )
         items = response.get('Items', [])
-        if not items:
-            return redirect(url_for('index')) # replace with 404 page once i build that
-        if session.get('username') != items[0].get('owner'):
-            return redirect(url_for('index')) 
-        if items[0].get('public') == False and session.get('username') != items[0].get('owner'):
-            return redirect(url_for('index')) 
-        
         username = items[0].get('owner')
-        video_url = f"https://cliprbucket.s3.amazonaws.com/videos/videos/{videoID}"
-        return render_template('videos.html', video_url=video_url, username=username)
+        total_views = items[0].get('total_views')
+        uploaded_date = items[0].get('upload_date')
+        views_date_data = items[0].get('views')
+        print(views_date_data)
+        if not total_views:
+            total_views = 0
+        return jsonify({
+                'username': username,
+                'total_views': total_views,
+                'uploaded_date': uploaded_date,
+                'views_data': views_date_data
+            }), 200
 
     except Exception as e:
         return str(e), 500
@@ -110,6 +114,91 @@ def user_profile(username):
         username = items[0].get('username')
         for i in reversed(items[0].get('videos')):
             video_list.append(i.replace('videos/',''))
-        return render_template('profiles.html', video_list=video_list, username=username)
+        return jsonify({
+                'success': True,
+                'video_list': video_list,
+                'username': username
+            }), 200
     except Exception as e:
         return str(e), 500
+
+@app.route('/statistics')
+def statistics():
+    response = table.scan()
+    json = {"totalVideosClipped": response['Count']}
+    return json
+
+@app.route('/view_increment/<videoID>', methods=['POST'])
+def update_views(videoID):
+    video_data = request.get_json()
+    video_id = video_data['videoID']
+    username = video_data.get('username')
+    video_scan = table.scan(FilterExpression=Attr('videoID').contains(videoID))
+    items = video_scan.get('Items', [])
+
+    if not items:
+        return jsonify({'error': 'Video not found'}), 404
+
+    owner = items[0].get('owner')
+    if username.lower() == owner.lower():
+        return jsonify({'message': 'View increment not allowed for owner'}), 200
+    else:
+        data_to_send = json.dumps({'videoID': video_id})
+        response = requests.post('https://a255z88ipi.execute-api.us-east-1.amazonaws.com/dev/Views', data=data_to_send)
+        if response.status_code == 200:
+            return jsonify({'message': 'View count incremented'}), 200
+        else:
+            return jsonify({'error': 'Failed to increment view count'}), 500
+    
+@app.route('/update/clipr/software/', methods=['POST'])
+def update_software():
+    data = request.json
+    token = data.get('accessToken')
+
+    try:
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        username = decoded.get('username')
+        print(username)
+        clip_interval = data.get('clip_interval')
+        clip_hotkey = data.get('clip_hotkey')
+        obs_port = data.get('obs_port')
+
+        update_response = user_profile_table.update_item(
+            Key={
+                'username': username
+            },
+            UpdateExpression="SET clip_interval = :ci, clip_hotkey = :ch, obs_port = :op",
+            ExpressionAttributeValues={
+                ':ci': clip_interval,
+                ':ch': clip_hotkey,
+                ':op': obs_port
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+        
+        return jsonify({'message': update_response}), 200
+    
+    except jwt.ExpiredSignatureError:
+        return jsonify({'message': 'Token has expired'}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({'message': 'Invalid token'}), 401
+    except Exception as e:
+        print(e)
+        return jsonify({'message': 'An error occurred'}), 500 
+
+@app.route('/user/settings', methods=['GET'])
+def fetch_user_settings():
+    token = request.headers.get('Authorization').split(" ")[1]
+    try:
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        username = decoded.get('username')
+        response = user_profile_table.scan(FilterExpression=Attr('username').contains(username))
+        items = response.get('Items', [])
+        if items:
+            clip_interval = items[0].get('clip_interval')
+            clip_hotkey = items[0].get('clip_hotkey')
+            obs_port = items[0].get('obs_port')
+            return jsonify({'clip_interval': clip_interval, 'clip_hotkey': clip_hotkey, 'obs_port': obs_port})
+        return jsonify({'message': 'User settings not found'}), 404
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
