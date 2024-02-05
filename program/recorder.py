@@ -6,9 +6,9 @@ import getpass
 import obsws_python as obs
 import psutil
 import glob
-import random
+import uuid
 from config import OBSConfig
-from request import upload_video_to_s3
+from request import upload_video_to_s3, API_FETCH_USER_SETTINGS
 logging.basicConfig(level=logging.ERROR)
 username = getpass.getuser()
 OBS_CONFIG_PATH = f"C:\\Users\\{username}\\AppData\\Roaming\\obs-studio"
@@ -115,7 +115,7 @@ def get_video_duration(filename):
     except Exception as e:
         print(f"Error getting duration: {e}")
         return None
-
+    
 def process_latest_video():
     print("yes")
     raw_folder_path = f"C:\\Users\\{username}\\Videos\\CLIPR_raw_videos"
@@ -127,22 +127,17 @@ def process_latest_video():
 
     try:
         duration = get_video_duration(latest_video)
-        if duration is None:
-            raise Exception("Unable to get video duration")
+        settings = API_FETCH_USER_SETTINGS()
+        clip_interval = int(settings.get('clip_interval', 30)) 
 
-        if duration > 20:
-            start_time = duration - 20
-            random_url = random.randint(1, 1930183912434131)
-            output_filename = os.path.join(clips_folder_path, f"{random_url}.mp4")
-            subprocess.run(["ffmpeg", "-i", latest_video, "-ss", str(start_time), "-t", "20", "-c", "copy", output_filename], check=True)
-            print(f"Video trimmed successfully and saved as {output_filename}")
-            compressed_output_filename = os.path.join(clips_folder_path, f"compressed_{random_url}.mp4")
-            subprocess.run(["ffmpeg", "-i", output_filename, "-b:v", "800k", "-y", compressed_output_filename], check=True)
-            print(f"Video compressed successfully and saved as {compressed_output_filename}")  
-            upload_video_to_s3(compressed_output_filename, f"videos/{random_url}")
-            print(random_url)
-        else:
-            print("Video is less than 20 seconds long, no trimming needed.")
+        start_time = duration - clip_interval
+        random_url = uuid.uuid4().hex
+        output_filename = os.path.join(clips_folder_path, f"{random_url}.mp4")
+        subprocess.run(["ffmpeg", "-ss", str(start_time), "-i", latest_video, "-t", str(clip_interval), "-c", "copy", output_filename], check=True)
+        print(f"Video trimmed successfully and saved as {output_filename}")
+        upload_video_to_s3(output_filename, f"videos/{random_url}")
+        print(random_url)
+
     except Exception as e:
         print(e)
         logging.error(f"Error processing video: {e}")
