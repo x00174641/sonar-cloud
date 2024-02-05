@@ -6,6 +6,7 @@ import base64
 import requests
 import json
 import jwt
+from datetime import datetime
 from botocore.exceptions import ClientError
 from webapp import app
 from flask import render_template, request, flash, redirect, url_for , session, jsonify
@@ -20,6 +21,7 @@ access_secret = os.getenv('SECRET_KEY')
 dynamodb = boto3.resource('dynamodb',"us-east-1", aws_access_key_id=access_key, aws_secret_access_key=access_secret)
 user_profile_table = dynamodb.Table('cliprDB')
 table = dynamodb.Table('cliprVideoDB')
+s3 = boto3.client("s3", aws_access_key_id=access_key, aws_secret_access_key=access_secret)
 
 # Routes 
 @app.route('/')
@@ -158,14 +160,15 @@ def update_software():
     try:
         decoded = jwt.decode(token, options={"verify_signature": False})
         username = decoded.get('username')
-        print(username)
         clip_interval = data.get('clip_interval')
         clip_hotkey = data.get('clip_hotkey')
         obs_port = data.get('obs_port')
+        response = user_profile_table.scan(FilterExpression=Attr('channelName').contains("@"+username))
+        items = response.get('Items', [])
 
         update_response = user_profile_table.update_item(
             Key={
-                'username': username
+                'username': items[0].get('username')
             },
             UpdateExpression="SET clip_interval = :ci, clip_hotkey = :ch, obs_port = :op",
             ExpressionAttributeValues={
@@ -192,7 +195,7 @@ def fetch_user_settings():
     try:
         decoded = jwt.decode(token, options={"verify_signature": False})
         username = decoded.get('username')
-        response = user_profile_table.scan(FilterExpression=Attr('username').contains(username))
+        response = user_profile_table.scan(FilterExpression=Attr('channelName').contains("@" + username))
         items = response.get('Items', [])
         if items:
             clip_interval = items[0].get('clip_interval')
@@ -202,3 +205,58 @@ def fetch_user_settings():
         return jsonify({'message': 'User settings not found'}), 404
     except Exception as e:
         return jsonify({'message': str(e)}), 500
+
+@app.route('/gateway/upload', methods=['POST'])
+def upload_video_to_s3_bucket():
+    try:
+        profile_table = dynamodb.Table('cliprDB')
+        videos_table = dynamodb.Table('cliprVideoDB')
+
+        file = request.files['file_content']
+        accessToken = request.form['accessToken']
+        file_name = request.form['file_name']
+        decoded = jwt.decode(accessToken, options={"verify_signature": False})
+        username = decoded.get('username')
+        file_content = file.read()
+
+        s3.put_object(
+            Bucket="cliprbucket",
+            Key=f"videos/{file_name}",
+            Body=file_content,
+            ContentType='video/mp4'
+        )
+
+        current_date = datetime.now().strftime('%Y-%m-%d')
+
+        response = user_profile_table.scan(FilterExpression=Attr('channelName').contains("@" + username))
+        items = response.get('Items', [])
+        if not items:
+            raise ValueError(f"User {username} not found.")
+
+        profile_table.update_item(
+            Key={'username': items[0].get('username')},
+            UpdateExpression="SET videos = list_append(if_not_exists(videos, :empty_list), :new_file)",
+            ExpressionAttributeValues={
+                ':new_file': [file_name],
+                ':empty_list': []
+            },
+        )
+
+        videos_table.put_item(
+            Item={
+                'videoID': file_name,
+                'public': False,
+                'owner': items[0].get('username'),
+                'upload_date': current_date,
+                'total_views': 0,
+                'total_likes': 0,
+                'total_dislikes': 0,
+                'views': []
+            }
+        )
+
+        return jsonify({"message": "Successfully uploaded video."}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
