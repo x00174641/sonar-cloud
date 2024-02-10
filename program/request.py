@@ -61,6 +61,7 @@ def retrieve_access_token():
             body_data = json.loads(response_data['body'])
             access_token = body_data.get('AuthenticationResult', {}).get('AccessToken')
             if access_token:
+                print(access_token)
                 print("Successfully Authenticated.... Retrieved IdToken!")
                 return access_token
             else:

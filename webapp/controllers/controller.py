@@ -91,6 +91,10 @@ def video(videoID):
         total_views = items[0].get('total_views')
         uploaded_date = items[0].get('upload_date')
         views_date_data = items[0].get('views')
+        tags = items[0].get('tags')
+        title = items[0].get('title')
+        description = items[0].get('description')
+
         print(views_date_data)
         if not total_views:
             total_views = 0
@@ -98,7 +102,10 @@ def video(videoID):
                 'username': username,
                 'total_views': total_views,
                 'uploaded_date': uploaded_date,
-                'views_data': views_date_data
+                'views_data': views_date_data,
+                'tags':tags,
+                'title': title,
+                'description': description
             }), 200
 
     except Exception as e:
@@ -214,7 +221,7 @@ def upload_video_to_s3_bucket():
 
         file = request.files['file_content']
         accessToken = request.form['accessToken']
-        file_name = request.form['file_name']
+        file_name = request.form['file_name'].replace('videos/', '')
         decoded = jwt.decode(accessToken, options={"verify_signature": False})
         username = decoded.get('username')
         file_content = file.read()
@@ -248,6 +255,8 @@ def upload_video_to_s3_bucket():
                 'public': False,
                 'owner': items[0].get('username'),
                 'upload_date': current_date,
+                'title': '',
+                'description': '',
                 'total_views': 0,
                 'total_likes': 0,
                 'total_dislikes': 0,
@@ -259,4 +268,70 @@ def upload_video_to_s3_bucket():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/delete/videos/', methods=['DELETE'])
+def delete_video():
+    token = request.headers.get('Authorization').split(" ")[1]
+    video_id = request.args.get('videoID')
     
+    try:
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        username = decoded.get('username')
+        
+        response = user_profile_table.scan(
+            FilterExpression=Attr('channelName').contains("@" +username)
+        )
+        items = response.get('Items', [])
+        
+        if not items:
+            return jsonify({"error": "User not found."}), 404
+
+        user_profile = items[0]
+        if 'videos' not in user_profile or video_id not in user_profile['videos']:
+            return jsonify({"error": "Video ID not found in user's profile."}), 404
+        
+        video_index = user_profile['videos'].index(video_id)
+        
+        user_profile_table.update_item(
+            Key={'username': user_profile.get('username')},
+            UpdateExpression=f"REMOVE videos[{video_index}]",
+        )
+        
+        s3.delete_object(
+            Bucket="cliprbucket",
+            Key=f"videos/{video_id}"
+        )
+
+        table.delete_item(
+            Key={'videoID': video_id}
+        )
+        
+        return jsonify({"message": "Video deleted successfully."}), 200
+
+    except jwt.exceptions.DecodeError:
+        return jsonify({"error": "Invalid token."}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/update_video', methods=['POST'])
+def update_video():
+    data = request.json
+    videoID = data['videoID']
+    title = data.get('title', '')
+    description = data.get('description', '')
+    tags = data.get('tags', [])
+
+    response = table.update_item(
+        Key={
+            'videoID': videoID
+        },
+        UpdateExpression='SET title = :title, description = :desc, tags = :tags',
+        ExpressionAttributeValues={
+            ':title': title,
+            ':desc': description,
+            ':tags': tags
+        },
+        ReturnValues="UPDATED_NEW"
+    )
+    
+    return jsonify({'message': 'Video updated successfully', 'updatedAttributes': response}), 200
