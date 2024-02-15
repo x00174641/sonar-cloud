@@ -133,8 +133,13 @@ def user_profile(username):
 
 @app.route('/statistics')
 def statistics():
+    total_clips_today = 0
     response = table.scan()
-    json = {"totalVideosClipped": response['Count']}
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    for i in response.get('Items'): 
+        if current_date == i.get('upload_date'):
+            total_clips_today += 1
+    json = {"totalVideosClipped": response['Count'], "totalClips_Today": total_clips_today}
     return json
 
 @app.route('/view_increment/<videoID>', methods=['POST'])
@@ -149,16 +154,16 @@ def update_views(videoID):
         return jsonify({'error': 'Video not found'}), 404
 
     owner = items[0].get('owner')
-    if username.lower() == owner.lower():
-        return jsonify({'message': 'View increment not allowed for owner'}), 200
+    # if username.lower() == owner.lower():
+    #     return jsonify({'message': 'View increment not allowed for owner'}), 200
+    # else:
+    data_to_send = json.dumps({'videoID': video_id})
+    response = requests.post('https://a255z88ipi.execute-api.us-east-1.amazonaws.com/dev/Views', data=data_to_send)
+    if response.status_code == 200:
+        return jsonify({'message': 'View count incremented'}), 200
     else:
-        data_to_send = json.dumps({'videoID': video_id})
-        response = requests.post('https://a255z88ipi.execute-api.us-east-1.amazonaws.com/dev/Views', data=data_to_send)
-        if response.status_code == 200:
-            return jsonify({'message': 'View count incremented'}), 200
-        else:
-            return jsonify({'error': 'Failed to increment view count'}), 500
-    
+        return jsonify({'error': 'Failed to increment view count'}), 500
+
 @app.route('/update/clipr/software/', methods=['POST'])
 def update_software():
     data = request.json
