@@ -9,6 +9,7 @@ import { FaCopy, FaChartLine } from "react-icons/fa";
 import EditVideo from "@/components/EditVideo";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import useJwtDecode from '../hooks/TokenDecoder';
+import LineChart from './VideoLineChart';
 
 const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
   const token = localStorage.getItem('accessToken');
@@ -70,7 +71,9 @@ const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
                   <DrawerContent>
                     <DrawerHeader>
                       <DrawerTitle>Video Stats</DrawerTitle>
-                      <p>{videoInfo[video]?.total_views} views</p>
+                      <div className="mt-3 h-[300px] w-[800px] mb-7">
+                      <LineChart videoInfo={videoInfo} video={video} />
+                      </div>
                     </DrawerHeader>
                   </DrawerContent>
                 </Drawer>
