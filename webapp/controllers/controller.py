@@ -340,3 +340,14 @@ def update_video():
     )
     
     return jsonify({'message': 'Video updated successfully', 'updatedAttributes': response}), 200
+
+
+@app.route('/api/getVideos', methods=["GET"])
+def getVideos():
+    video_list = []
+    test = table.scan()
+    print("hello")
+    for i in test.get('Items'): 
+        if i.get('public') != False:
+            video_list.append(i.get('videoID'))
+    return jsonify({'video_list': video_list})
