@@ -5,6 +5,7 @@
 
 
 @layer base {
+
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
@@ -87,6 +88,16 @@
 
 .wave .shape-fill {
   fill: hsl(var(--background)) !important;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background-color: hsl(var(--bg-background)) !important;
+}
+::-webkit-scrollbar-thumb {
+  background-color:  #cccccc !important;
 }
 
 @layer base {

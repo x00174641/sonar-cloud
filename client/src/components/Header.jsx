@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/use-toast"
 const containerStyle = {
     fontSize: '1.1rem',
     margin: '0 auto',
-    maxWidth: '550px',
+    maxWidth: '500px',
     marginTop: '30px',
 };
 function Header() {
