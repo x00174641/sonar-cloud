@@ -263,9 +263,9 @@ def upload_video_to_s3_bucket():
                 'title': '',
                 'description': '',
                 'total_views': 0,
-                'total_likes': 0,
-                'total_dislikes': 0,
-                'views': []
+                'views': [],
+                'likes': [],
+                'dislikes': [],
             }
         )
 
@@ -351,3 +351,53 @@ def getVideos():
         if i.get('public') != False:
             video_list.append(i.get('videoID'))
     return jsonify({'video_list': video_list})
+
+from flask import request, jsonify
+
+@app.route('/api/like/', methods=["POST"])
+def likeVideo():
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    token = request.headers.get('Authorization').split(" ")[1]
+    data = request.json
+    video_id = data.get('videoID')
+    print(video_id)
+    decoded = jwt.decode(token, options={"verify_signature": False})
+    username = decoded.get('username')
+
+    response = table.get_item(
+        Key={
+            'videoID': video_id
+        }
+    )
+    if 'Item' in response: 
+        item = response['Item']
+        likes = item.get('likes', [])
+
+        user_liked = next((like for like in likes if like['username'] == username), None)
+
+        if user_liked:
+            likes.remove(user_liked)
+            response = table.update_item(
+                Key={
+                    'videoID': video_id 
+                },
+                UpdateExpression='SET likes = :likes',
+                ExpressionAttributeValues={
+                    ':likes': likes
+                },
+            )
+            return jsonify({'status': 'success', 'message': 'Like removed'})
+        else:
+            response = table.update_item(
+                Key={
+                    'videoID': video_id 
+                },
+                UpdateExpression='SET likes = list_append(if_not_exists(likes, :empty_list), :new_like)',
+                ExpressionAttributeValues={
+                    ':new_like': [{'username': username, 'date': current_date}],
+                    ':empty_list': []
+                },
+            )
+            return jsonify({'status': 'success', 'message': 'Like added'})
+    else:
+        return jsonify({'status': 'error', 'message': 'Video not found'})

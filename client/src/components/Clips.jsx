@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import LikeVideoTarget from "../components/LikeVideo";
 
 function Clip() {
   let { videoID } = useParams();
@@ -10,6 +11,8 @@ function Clip() {
       <video controls>
         <source src={`https://cliprbucket.s3.amazonaws.com/videos/${videoID}`}></source>
       </video>
+      <LikeVideoTarget videoID={videoID}></LikeVideoTarget>
+
     </div>
   );
 }
