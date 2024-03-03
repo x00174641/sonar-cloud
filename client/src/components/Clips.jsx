@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import LikeVideoTarget from "../components/LikeVideo";
-
+import DislikeVideoButton from './DislikeVideo';
 function Clip() {
   let { videoID } = useParams();
 
@@ -12,7 +12,7 @@ function Clip() {
         <source src={`https://cliprbucket.s3.amazonaws.com/videos/${videoID}`}></source>
       </video>
       <LikeVideoTarget videoID={videoID}></LikeVideoTarget>
-
+      <DislikeVideoButton videoID={videoID}></DislikeVideoButton>
     </div>
   );
 }
