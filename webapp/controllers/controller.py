@@ -266,6 +266,7 @@ def upload_video_to_s3_bucket():
                 'views': [],
                 'likes': [],
                 'dislikes': [],
+                'comments': []
             }
         )
 
@@ -449,5 +450,36 @@ def dislikeVideo():
                 },
             )
             return jsonify({'status': 'success', 'message': 'Dislike added'}) 
+    else:
+        return jsonify({'status': 'error', 'message': 'Video not found'})
+
+@app.route('/api/comment/', methods=["POST"])
+def postComment():
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    token = request.headers.get('Authorization').split(" ")[1]
+    data = request.json
+    video_id = data.get('videoID')
+    comment = data.get('comment')
+    print(video_id)
+    decoded = jwt.decode(token, options={"verify_signature": False})
+    username = decoded.get('username')
+
+    response = table.get_item(
+        Key={
+            'videoID': video_id
+        }
+    )
+    if 'Item' in response: 
+        response = table.update_item(
+            Key={
+                'videoID': video_id 
+            },
+            UpdateExpression='SET comments = list_append(if_not_exists(comments, :empty_list), :new_comment)',
+            ExpressionAttributeValues={
+                ':new_comment': [{'username': username, 'comment': comment, 'date': current_date}],
+                ':empty_list': []
+            },
+        )
+        return jsonify({'status': 'success', 'message': 'Comment posted'})
     else:
         return jsonify({'status': 'error', 'message': 'Video not found'})
