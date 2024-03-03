@@ -401,3 +401,53 @@ def likeVideo():
             return jsonify({'status': 'success', 'message': 'Like added'})
     else:
         return jsonify({'status': 'error', 'message': 'Video not found'})
+
+from flask import request, jsonify
+
+@app.route('/api/dislike/', methods=["POST"]) 
+def dislikeVideo():
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    token = request.headers.get('Authorization').split(" ")[1]
+    data = request.json
+    video_id = data.get('videoID')
+    print(video_id)
+    decoded = jwt.decode(token, options={"verify_signature": False})
+    username = decoded.get('username')
+
+    response = table.get_item(
+        Key={
+            'videoID': video_id
+        }
+    )
+    if 'Item' in response: 
+        item = response['Item']
+        dislikes = item.get('dislikes', []) 
+
+        user_disliked = next((dislike for dislike in dislikes if dislike['username'] == username), None) 
+
+        if user_disliked:
+            dislikes.remove(user_disliked)
+            response = table.update_item(
+                Key={
+                    'videoID': video_id 
+                },
+                UpdateExpression='SET dislikes = :dislikes',
+                ExpressionAttributeValues={
+                    ':dislikes': dislikes 
+                },
+            )
+            return jsonify({'status': 'success', 'message': 'Dislike removed'})
+        else:
+            response = table.update_item(
+                Key={
+                    'videoID': video_id 
+                },
+                UpdateExpression='SET dislikes = list_append(if_not_exists(dislikes, :empty_list), :new_dislike)',
+                ExpressionAttributeValues={
+                    ':new_dislike': [{'username': username, 'date': current_date}], 
+                    ':empty_list': []
+                },
+            )
+            return jsonify({'status': 'success', 'message': 'Dislike added'}) 
+    else:
+        return jsonify({'status': 'error', 'message': 'Video not found'})
