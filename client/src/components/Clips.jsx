@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import LikeVideoTarget from "../components/LikeVideo";
 import DislikeVideoButton from './DislikeVideo';
+import AddComment from './AddComment';
 function Clip() {
   let { videoID } = useParams();
 
@@ -13,6 +14,7 @@ function Clip() {
       </video>
       <LikeVideoTarget videoID={videoID}></LikeVideoTarget>
       <DislikeVideoButton videoID={videoID}></DislikeVideoButton>
+      <AddComment videoID={videoID}></AddComment>
     </div>
   );
 }
