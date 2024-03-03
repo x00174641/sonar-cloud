@@ -37,7 +37,7 @@ function Header() {
 
                     <NavigationMenuItem>
                         <div className="px-4 py-2">
-                            <h1 className="text-muted-foreground hover:text-gray-600 cursor-pointer">Discover</h1>
+                            <a href="/discovery"><h1 className="text-muted-foreground hover:text-gray-600 cursor-pointer">Discover</h1></a>
                         </div>
                     </NavigationMenuItem>
 
