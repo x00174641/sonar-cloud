@@ -34,7 +34,7 @@ def create_user(username, email, password):
             UserAttributes=user_attributes,
             SecretHash=secret_hash
         )
-        table.put_item(Item={'username': username, 'channelName': "@" + username.lower() ,'email': email, 'videos': []})
+        table.put_item(Item={'username': username, 'channelName': "@" + username.lower() ,'email': email, 'videos': [], 'admin': False})
 
         return True
     except ClientError as e:

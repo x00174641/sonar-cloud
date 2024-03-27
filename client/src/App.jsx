@@ -6,6 +6,7 @@ import Clip from './components/Clips';
 import Discovery from './components/Discovery';
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from '@/components/Header';
+import Admin from './components/Admin';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<Index />} />
         <Route path="/clip/:videoID" element={<Clip />}/>
         <Route path="/discovery/" element={<Discovery />}/>
+        <Route path="/admin/" element={<Admin />}/>
       </Routes>
     </Router>
     </AuthProvider>
