@@ -9,7 +9,7 @@ const FetchUserProfileVideos = (decodedToken) => {
     if (!decodedToken || !decodedToken.username) return;
     setIsLoading(true);
     try {
-      const response = await fetch(`http://127.0.0.1:5000/user/channel/@${decodedToken.username}`, {
+      const response = await fetch(`http://139.59.160.51:5000/user/channel/@${decodedToken.username}`, {
         method: 'GET',
       });
       if (!response.ok) {
@@ -31,7 +31,7 @@ const FetchUserProfileVideos = (decodedToken) => {
   useEffect(() => {
     const getVideoInfo = async (videoId) => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/videos/${videoId}`, {
+        const response = await fetch(`http://139.59.160.51:5000/videos/${videoId}`, {
           method: 'GET',
         });
         if (!response.ok) {

@@ -16,7 +16,7 @@ const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
   const decodedToken = useJwtDecode(token);
   const incrementView = async (videoId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/view_increment/${videoId}`, {
+      const response = await fetch(`http://139.59.160.51:5000/view_increment/${videoId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

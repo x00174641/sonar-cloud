@@ -16,7 +16,7 @@ function VideosComponent() {
         const fetchVideoIDs = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch('http://127.0.0.1:5000/api/getVideos');
+                const response = await fetch('http://139.59.160.51:5000/api/getVideos');
                 if (!response.ok) {
                     throw new Error('Something went wrong!');
                 }
@@ -32,7 +32,7 @@ function VideosComponent() {
         const fetchVideoDetails = async (videoList) => {
             try {
                 const videosWithDetails = await Promise.all(videoList.map(async (videoID) => {
-                    const response = await fetch(`http://127.0.0.1:5000/videos/${videoID}`);
+                    const response = await fetch(`http://139.59.160.51:5000/videos/${videoID}`);
                     if (!response.ok) {
                         throw new Error(`Failed to fetch video info for ${videoID}`);
                     }
