@@ -7,7 +7,7 @@ const VideoDeleteButton = ({ videoID, refreshData }) => {
 
   const deleteVideo = async () => {
     try {
-      const response = await fetch(`http://139.59.160.51:5000/delete/videos/?videoID=${videoID}`, {
+      const response = await fetch(`http://127.0.0.1:5000/delete/videos/?videoID=${videoID}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,

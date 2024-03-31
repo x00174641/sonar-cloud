@@ -10,7 +10,7 @@ const useFetchStatistics = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://139.59.160.51:5000/statistics');
+        const response = await fetch('http://127.0.0.1:5000/statistics');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
