@@ -72,7 +72,7 @@ def retrieve_access_token():
         print(f"Failed to retrieve token, status code: {response.status_code}")
 
 def API_FETCH_USER_SETTINGS():
-    url = 'http://127.0.0.1:5000/user/settings'
+    url = 'http://139.59.160.51:5000/user/settings'
 
     headers = {
         'Authorization': f'Bearer {retrieve_access_token()}',
@@ -99,7 +99,7 @@ def upload_video_to_s3(local_video_file_path, s3_key):
         }
         
         response = requests.post(
-            "http://127.0.0.1:5000/gateway/upload",
+            "http://139.59.160.51:5000/gateway/upload",
             files=files,
             headers=headers
         )

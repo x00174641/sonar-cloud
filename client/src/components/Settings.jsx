@@ -15,7 +15,7 @@ function UserSettings() {
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:5000/user/settings', {
+                const response = await fetch('http://139.59.160.51:5000/user/settings', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -47,7 +47,7 @@ function UserSettings() {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/update/clipr/software/', {
+            const response = await fetch('http://139.59.160.51:5000/update/clipr/software/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

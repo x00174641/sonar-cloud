@@ -17,7 +17,7 @@ function useUserChannelVideos(username) {
     useEffect(() => {
         const fetchUserChannelVideos = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5000/user/channel/${username}`);
+                const response = await fetch(`http://139.59.160.51:5000/user/channel/${username}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch video list');
                 }
@@ -50,7 +50,7 @@ function useVideoInfo(videoID) {
     useEffect(() => {
         const fetchVideoInfo = async () => {
             try {
-                const response = await fetch(`http://127.0.0.1:5000/videos/${videoID}`);
+                const response = await fetch(`http://139.59.160.51:5000/videos/${videoID}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch video data');
                 }
