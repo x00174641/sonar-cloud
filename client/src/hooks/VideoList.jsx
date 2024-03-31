@@ -1,15 +1,15 @@
 import React from 'react';
-import { Dialog, DialogTrigger, DialogContent, DialogClose, DialogFooter, DialogTitle } from "@/components/ui/dialog";
-import { Card, CardDescription } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Dialog, DialogTrigger, DialogContent, DialogClose, DialogFooter, DialogTitle } from "../../components/ui/dialog";
+import { Card, CardDescription } from "../../components/ui/card";
+import { Skeleton } from "../../components/ui/Skeleton";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../omponents/ui/label";
 import { FaCopy, FaChartLine } from "react-icons/fa";
-import EditVideo from "@/components/EditVideo";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import useJwtDecode from '../hooks/TokenDecoder';
-import LineChart from './VideoLineChart';
+import EditVideo from "../../components/EditVideo";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "../../components/ui/drawer";
+import useJwtDecode from '../../hooks/TokenDecoder';
+import LineChart from '../../VideoLineChart';
 
 const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
   const token = localStorage.getItem('accessToken');
