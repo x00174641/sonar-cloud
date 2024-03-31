@@ -118,8 +118,6 @@ def user_profile(username):
         response = user_profile_table.scan(FilterExpression=Attr('channelName').contains(username))
         print(response)
         items = response.get('Items', [])
-        if not items:
-            return redirect(url_for('index')) # replace with 404 page once i build that 
         username = items[0].get('username')
         for i in reversed(items[0].get('videos')):
             video_list.append(i.replace('videos/',''))
