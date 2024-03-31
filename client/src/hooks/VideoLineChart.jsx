@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 function LineChart({ videoInfo, video }) {
     const [filteredData, setFilteredData] = useState({ labels: [], datasets: [] });
     const [filter, setFilter] = useState('7days');
-
+    console.log(videoInfo)
     useEffect(() => {
         if (!videoInfo[video]?.views_data) {
             return;
