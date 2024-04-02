@@ -34,7 +34,7 @@ function Admin() {
 useEffect(() => {
     const checkAdminStatus = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:5000/isAdmin', {
+            const response = await fetch('https://api.clipr.solutions/isAdmin', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.accessToken}`
@@ -61,7 +61,7 @@ useEffect(() => {
         const fetchVideoIDs = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch('http://127.0.0.1:5000/api/getVideos');
+                const response = await fetch('https://api.clipr.solutions/api/getVideos');
                 if (!response.ok) {
                     throw new Error('Something went wrong!');
                 }
@@ -77,7 +77,7 @@ useEffect(() => {
         const fetchVideoDetails = async (videoList) => {
             try {
                 const videosWithDetails = await Promise.all(videoList.map(async (videoID) => {
-                    const response = await fetch(`http://127.0.0.1:5000/videos/${videoID}`);
+                    const response = await fetch(`https://api.clipr.solutions/videos/${videoID}`);
                     if (!response.ok) {
                         throw new Error(`Failed to fetch video info for ${videoID}`);
                     }

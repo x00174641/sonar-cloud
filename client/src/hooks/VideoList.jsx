@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dialog, DialogTrigger, DialogContent, DialogClose, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardDescription } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,7 @@ const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
   const decodedToken = useJwtDecode(token);
   const incrementView = async (videoId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/view_increment/${videoId}`, {
+      const response = await fetch(`https://api.clipr.solutions/view_increment/${videoId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
