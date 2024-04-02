@@ -7,6 +7,7 @@ import Discovery from './components/Discovery';
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from '@/components/Header';
 import Admin from './components/Admin';
+import UserChannel from './components/UserChannel'
 
 function App() {
   return (
@@ -17,8 +18,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/clip/:videoID" element={<Clip />}/>
-        <Route path="/discovery/" element={<Discovery />}/>
-        <Route path="/admin/" element={<Admin />}/>
+        <Route path="/discovery" element={<Discovery />}/>
+        <Route path="/admin" element={<Admin />}/>
+        <Route path="/user/channel/:username" element={<UserChannel />}/>
+
       </Routes>
     </Router>
     </AuthProvider>
