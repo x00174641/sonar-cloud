@@ -18,7 +18,7 @@ function EditVideo({ videoID, refreshData }) {
     useEffect(() => {
         const fetchVideoDetails = async () => {
             try {
-                const response = await fetch(`https://api.clipr.solutions:5000/videos/${videoID}`, {
+                const response = await fetch(`https://api.clipr.solutions/videos/${videoID}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ function EditVideo({ videoID, refreshData }) {
 
     const saveChanges = async () => {
         try {
-            const response = await fetch(`https://api.clipr.solutions:5000/update_video`, {
+            const response = await fetch(`https://api.clipr.solutions/update_video`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

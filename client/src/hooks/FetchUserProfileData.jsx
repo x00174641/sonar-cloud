@@ -9,7 +9,7 @@ const FetchUserProfileVideos = (decodedToken) => {
     if (!decodedToken || !decodedToken.username) return;
     setIsLoading(true);
     try {
-      const response = await fetch(`https://api.clipr.solutions:5000/user/channel/@${decodedToken.username}`, {
+      const response = await fetch(`https://api.clipr.solutions/user/channel/@${decodedToken.username}`, {
         method: 'GET',
       });
       if (!response.ok) {
@@ -31,7 +31,7 @@ const FetchUserProfileVideos = (decodedToken) => {
   useEffect(() => {
     const getVideoInfo = async (videoId) => {
       try {
-        const response = await fetch(`https://api.clipr.solutions:5000/videos/${videoId}`, {
+        const response = await fetch(`https://api.clipr.solutions/videos/${videoId}`, {
           method: 'GET',
         });
         if (!response.ok) {

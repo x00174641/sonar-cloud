@@ -11,7 +11,7 @@ const LikeVideoButton = ({ videoID }) => {
 
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('https://api.clipr.solutions:5000/api/like/', {
+            const response = await fetch('https://api.clipr.solutions/api/like/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

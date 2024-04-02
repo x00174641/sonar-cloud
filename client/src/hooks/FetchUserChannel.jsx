@@ -17,7 +17,7 @@ function useUserChannelVideos(username) {
     useEffect(() => {
         const fetchUserChannelVideos = async () => {
             try {
-                const response = await fetch(`https://api.clipr.solutions:5000/user/channel/${username}`);
+                const response = await fetch(`https://api.clipr.solutions/user/channel/${username}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch video list');
                 }
@@ -50,7 +50,7 @@ function useVideoInfo(videoID) {
     useEffect(() => {
         const fetchVideoInfo = async () => {
             try {
-                const response = await fetch(`https://api.clipr.solutions:5000/videos/${videoID}`);
+                const response = await fetch(`https://api.clipr.solutions/videos/${videoID}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch video data');
                 }

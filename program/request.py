@@ -72,7 +72,7 @@ def retrieve_access_token():
         print(f"Failed to retrieve token, status code: {response.status_code}")
 
 def API_FETCH_USER_SETTINGS():
-    url = 'https://api.clipr.solutions:5000/user/settings'
+    url = 'https://api.clipr.solutions/user/settings'
 
     headers = {
         'Authorization': f'Bearer {retrieve_access_token()}',
@@ -99,7 +99,7 @@ def upload_video_to_s3(local_video_file_path, s3_key):
         }
         
         response = requests.post(
-            "https://api.clipr.solutions:5000/gateway/upload",
+            "https://api.clipr.solutions/gateway/upload",
             files=files,
             headers=headers
         )

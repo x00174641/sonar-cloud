@@ -20,7 +20,7 @@ function Signup() {
         e.preventDefault(); 
 
         try {
-            const response = await fetch('https://api.clipr.solutions:5000/signup', {
+            const response = await fetch('https://api.clipr.solutions/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
