@@ -17,8 +17,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/clip/:videoID" element={<Clip />}/>
-        <Route path="/discovery/" element={<Discovery />}/>
-        <Route path="/admin/" element={<Admin />}/>
+        <Route path="/discovery" element={<Discovery />}/>
+        <Route path="/admin" element={<Admin />}/>
       </Routes>
     </Router>
     </AuthProvider>

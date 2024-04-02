@@ -20,7 +20,7 @@ function Signup() {
         e.preventDefault(); 
 
         try {
-            const response = await fetch('http://139.59.160.51:5000/signup', {
+            const response = await fetch('https://api.clipr.solutions:5000/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
