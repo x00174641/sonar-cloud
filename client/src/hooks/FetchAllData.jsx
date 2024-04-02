@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { bouncy } from 'ldrs'
 
 function VideosComponent() {
     const [videoIDs, setVideoIDs] = useState([]);
@@ -11,12 +12,13 @@ function VideosComponent() {
     const [error, setError] = useState(null);
     const [activeIndex, setActiveIndex] = useState(1);
     const [videos, setVideos] = useState({}); 
+    bouncy.register()
 
     useEffect(() => {
         const fetchVideoIDs = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch('http://127.0.0.1:5000/api/getVideos');
+                const response = await fetch('https://api.clipr.solutions/api/getVideos');
                 if (!response.ok) {
                     throw new Error('Something went wrong!');
                 }
@@ -32,7 +34,7 @@ function VideosComponent() {
         const fetchVideoDetails = async (videoList) => {
             try {
                 const videosWithDetails = await Promise.all(videoList.map(async (videoID) => {
-                    const response = await fetch(`http://127.0.0.1:5000/videos/${videoID}`);
+                    const response = await fetch(`https://api.clipr.solutions/videos/${videoID}`);
                     if (!response.ok) {
                         throw new Error(`Failed to fetch video info for ${videoID}`);
                     }
@@ -69,7 +71,7 @@ function VideosComponent() {
         });
     };
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div><LoadingOverlay /></div>;
     if (error) return <div>Error: {error}</div>;
 
     return (
@@ -163,5 +165,15 @@ function VideosComponent() {
         </>
     );
 }
-
+function LoadingOverlay() {
+    return (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black z-50">
+            <l-bouncy
+                size="45"
+                speed="1.75"
+                color="white"
+            ></l-bouncy>
+        </div>
+    );
+}
 export default VideosComponent;

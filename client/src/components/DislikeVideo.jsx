@@ -11,7 +11,7 @@ const DislikeVideoButton = ({ videoID }) => {
 
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch('http://127.0.0.1:5000/api/dislike/', { 
+            const response = await fetch('https://api.clipr.solutions/api/dislike/', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

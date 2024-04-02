@@ -1,6 +1,6 @@
 from webapp import app
 from flask_cors import CORS
-CORS(app, resources={r"/login": {"origins": "http://localhost:5173"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
     
