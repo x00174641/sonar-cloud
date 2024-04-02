@@ -7,6 +7,7 @@ import Discovery from './components/Discovery';
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from '@/components/Header';
 import Admin from './components/Admin';
+import UserChannel from './components/UserChannelGet';
 
 function App() {
   return (

@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { bouncy } from 'ldrs'
 
 function VideosComponent() {
     const [videoIDs, setVideoIDs] = useState([]);
@@ -11,6 +12,7 @@ function VideosComponent() {
     const [error, setError] = useState(null);
     const [activeIndex, setActiveIndex] = useState(1);
     const [videos, setVideos] = useState({}); 
+    bouncy.register()
 
     useEffect(() => {
         const fetchVideoIDs = async () => {
@@ -69,7 +71,7 @@ function VideosComponent() {
         });
     };
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div><LoadingOverlay /></div>;
     if (error) return <div>Error: {error}</div>;
 
     return (
@@ -163,5 +165,15 @@ function VideosComponent() {
         </>
     );
 }
-
+function LoadingOverlay() {
+    return (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black z-50">
+            <l-bouncy
+                size="45"
+                speed="1.75"
+                color="white"
+            ></l-bouncy>
+        </div>
+    );
+}
 export default VideosComponent;
