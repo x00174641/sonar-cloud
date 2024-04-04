@@ -34,7 +34,7 @@ const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap" style={{ paddingBottom: '100px' }}>
         {Array.from({ length: 4 }).map((_, index) => (
           <div key={index} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2">
             <Skeleton className="h-64" />
@@ -117,9 +117,14 @@ const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
               </Dialog>
             </DialogContent>
           </Dialog>
+          
         </div>
+
+        
       ))}
+      
     </div>
+    
   );
 };
 

@@ -54,11 +54,8 @@ function Signup() {
 
     return (
         <div className="px-4 py-2">
-                <Dialog>
-                    <DialogTrigger as="button" type="button">Sign up</DialogTrigger>
-                    <DialogContent>
+               
                         <DialogHeader>
-                            <DialogTitle>Sign up to CLIPR</DialogTitle>
                             <div className="grid gap-4 py-4">
                                 <div className="grid grid-cols-4 items-center gap-4">
                                     <Label htmlFor="Email" className="text-right">
@@ -83,8 +80,7 @@ function Signup() {
                                 </div>
                             </div>
                         </DialogHeader>
-                    </DialogContent>
-                </Dialog>
+  
         </div>
     );
 }

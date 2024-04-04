@@ -105,14 +105,7 @@ function VideosComponent() {
                                         <p className="font-bold text-2sm">{video.title}</p>
                                         <p className="text-muted-foreground text-xs">{video.username}</p>
                                         <p className="text-muted-foreground text-xs">{video.total_views} views | {video.uploaded_date}</p>
-                                        {video.tags?.map((tag, tagIndex) => (
-                                            <Badge
-                                                key={tagIndex}
-                                                className={`text-xs ${tagIndex !== 0 ? 'ml-2' : ''}`}
-                                            >
-                                                {tag}
-                                            </Badge>
-                                        )) ?? []}
+                                    
                                     </a>
 
                                 </div>
@@ -143,16 +136,6 @@ function VideosComponent() {
                                                 <p className="font-bold text-sm">{videoDetails.title}</p>
                                                 <p className="text-muted-foreground text-xs">{videoDetails.username}</p>
                                                 <p className="text-muted-foreground text-xs">{videoDetails.total_views} views | {videoDetails.uploaded_date}</p>
-                                                <div className="flex flex-wrap">
-                                                    {videoDetails.tags?.map((tag, tagIndex) => (
-                                                        <Badge
-                                                            key={tagIndex}
-                                                            className={`text-xs ${tagIndex !== 0 ? 'ml-2' : ''}`}
-                                                        >
-                                                            {tag}
-                                                        </Badge>
-                                                    )) ?? []}
-                                                </div>
                                             </div>
                                         )}
                                     </a>

@@ -19,7 +19,7 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: ['IBMPlexMono', 'monospace'],
+        sans: ['Poppins', 'monospace'],
      },
       colors: {
         border: "hsl(var(--border))",

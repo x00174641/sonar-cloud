@@ -1,12 +1,13 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins");
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
 @layer base {
-
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
@@ -30,27 +31,28 @@
     --radius: 1rem;
   }
 }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-  }
+
+.dark {
+  --background: 0 0% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 14.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 14.9%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 0 0% 14.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 0 0% 83.1%;
+}
 
 .rti--container {
   background-color: var(--background);
@@ -73,43 +75,117 @@
 .sparkline-colour {
   background-color: hsl(var(--primary)) !important;
 }
-.wave {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-  line-height: 0;
-  transform: rotate(180deg);
+
+.customFont {
+  color: #7286fe;
 }
 
-.wave svg {
-  position: relative;
-  display: block;
-  width: calc(100% + 1.3px);
-  height: 100px;
-}
-
-.wave .shape-fill {
-  fill: hsl(var(--background)) !important;
+.bg-gradient {
+  background: radial-gradient(ellipse 100% 100% at 0 100%, rgba(119, 232, 208, .15), rgba(232, 119, 175, 0)),
+    radial-gradient(ellipse 40% 100% at 60% -10%, rgba(119, 138, 232, .3), rgba(119, 138, 232, 0));
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background-color: hsl(var(--bg-background)) !important;
 }
+
 ::-webkit-scrollbar-thumb {
-  background-color:  #cccccc !important;
+  background-color: #cccccc !important;
+}
+
+.text-gradient-purple-blue {
+  background: linear-gradient(to right, #8b22c0, #1a98bb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 48px;
+
+}
+
+.arrow-style {
+  font-size: 70px;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  margin-top: 200px;
+}
+
+.arrow {
+  animation: bounce 2s infinite;
+}
+
+.type-animation {
+  font-size: 4em;
+  white-space: pre-line;
+  display: block;
+  margin-top: 150px;
+}
+
+section {
+  height: auto;
+  display: flex;
 }
 
 @layer base {
   * {
     @apply border-border;
+    scroll-behavior: smooth;
+
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-size: cover;
+    @apply text-foreground;
+    background: linear-gradient(40deg, #111111, #121212);
+  }
+}
+
+@media (max-width: 767px) {
+  .w-full.flex.justify-center.items-center {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .w-full.md\:w-1\/2 {
+    width: 70%;
+  }
+
+  .w-full.md\:w-1\/2.flex.justify-center {
+    margin-top: 20px;
+  }
+
+  .w-full.md\:w-1\/2.flex.justify-center img {
+    width: 70%;
+    margin-top: 20px;
+  }
+
+  .type-animation {
+    font-size: 2em !important;
+    margin-top: 50px;
+  }
+
+  .arrow-style {
+    margin-top: 10px !important;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0);
   }
 }
