@@ -4,13 +4,23 @@ import UserChannelGet from '../hooks/FetchUserChannel';
 import VideoContainer from './ui/VideoContainer';
 import { Separator } from "@/components/ui/separator"
 import Image from './download.png';
+import useFollowUser from '../hooks/FollowUser'; 
 
 function UserChannel() {
-    const { username } = useParams();
+  const { username } = useParams();
+  const { isFollowing, followUser, unfollowUser } = useFollowUser();
+
+  const handleFollow = () => {
+    if (isFollowing) {
+      unfollowUser();
+    } else {
+      followUser();
+    }
+  };
+
   return (
     <div>
-        
-        <VideoContainer>
+      <VideoContainer>
         <div className="flex items-center">
           <div className="ml-7 w-32 h-32">
             <img
@@ -21,6 +31,9 @@ function UserChannel() {
           </div>
           <div className="ml-7">
             <h2 className='text-2xl text-muted-foreground'>@{username}</h2>
+            <button onClick={handleFollow}>
+              {isFollowing ? 'Unfollow' : 'Follow'}
+            </button>
           </div>
         </div>
         <Separator className="my-5" />
@@ -29,7 +42,5 @@ function UserChannel() {
     </div>
   );
 }
-
-
 
 export default UserChannel;
