@@ -507,6 +507,9 @@ def follow_user(channelName):
     decoded = jwt.decode(token, options={"verify_signature": False})
     follower_username = decoded.get('username')
 
+    if follower_username.lower() == channelName.lower():
+        return jsonify({'status': 'error', 'message': 'Cannot follow yourself.'}), 403
+    
     response = user_profile_table.scan(FilterExpression=Attr('channelName').contains("@" + channelName.lower()))
     print("@" + channelName.lower())
     if 'Items' in response and len(response['Items']) > 0:
