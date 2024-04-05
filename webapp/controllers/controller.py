@@ -506,10 +506,9 @@ def follow_user(channelName):
     token = request.headers.get('Authorization').split(" ")[1]
     decoded = jwt.decode(token, options={"verify_signature": False})
     follower_username = decoded.get('username')
-
     if follower_username.lower() == channelName.lower():
         return jsonify({'status': 'error', 'message': 'Cannot follow yourself.'}), 403
-    
+
     response = user_profile_table.scan(FilterExpression=Attr('channelName').contains("@" + channelName.lower()))
     print("@" + channelName.lower())
     if 'Items' in response and len(response['Items']) > 0:
@@ -544,7 +543,9 @@ def follow_user(channelName):
             return jsonify({'status': 'success', 'message': 'User followed'})
     else:
         return jsonify({'status': 'error', 'message': 'User not found'})
-    
+
+from flask import jsonify
+
 @app.route('/check_follow_status/<channelName>')
 def isUserFollowed(channelName):
     try:
