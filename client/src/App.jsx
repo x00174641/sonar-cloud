@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Admin from './components/Admin';
 import UserChannel from './components/UserChannelGet';
 import { Toaster } from "@/components/ui/toaster"
+import CameraFeed from './components/ObsConnect';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/clip/:videoID" element={<Clip />}/>
         <Route path="/discovery" element={<Discovery />}/>
         <Route path="/admin" element={<Admin />}/>
+        <Route path="/camera" element={<CameraFeed />}/>
         <Route path="/user/channel/:username" element={<UserChannel />}/>
       </Routes>
     </Router>

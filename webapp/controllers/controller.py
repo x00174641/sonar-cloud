@@ -211,7 +211,8 @@ def fetch_user_settings():
             clip_interval = items[0].get('clip_interval')
             clip_hotkey = items[0].get('clip_hotkey')
             obs_port = items[0].get('obs_port')
-            return jsonify({'clip_interval': clip_interval, 'clip_hotkey': clip_hotkey, 'obs_port': obs_port})
+            password = items[0].get('password')
+            return jsonify({'clip_interval': clip_interval, 'clip_hotkey': clip_hotkey, 'obs_port': obs_port, 'password': password})
         return jsonify({'message': 'User settings not found'}), 404
     except Exception as e:
         return jsonify({'message': str(e)}), 500
@@ -567,3 +568,33 @@ def isUserFollowed(channelName):
     except Exception as e:
         print('Error checking follow status:', e)
         return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/post_obs_password', methods=['POST'])
+def postObsPassword():
+    try:
+        token = request.headers.get('Authorization').split(" ")[1]
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        username = decoded.get('username')
+        
+        password = request.form['password']
+
+        response = user_profile_table.scan(FilterExpression=Attr('channelName').contains("@" + username))
+
+        for item in response['Items']:
+            if 'password' in item and item['password'] == password:
+                return "Passwords is the same"
+            
+            user_profile_table.update_item(
+                Key={
+                    'username': item['username'] 
+                },
+                UpdateExpression='SET password = :val',
+                ExpressionAttributeValues={
+                    ':val': password
+                }
+            )
+
+        return "Passwords updated successfully"
+
+    except Exception as e:
+        return str(e), 400 
