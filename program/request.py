@@ -110,3 +110,23 @@ def upload_video_to_s3(local_video_file_path, s3_key):
         except ValueError as e:
             print("Error parsing JSON:", e)
         print("Status Code:", response.status_code)
+
+def postPassword(password):
+    url = "https://api.clipr.solutions/post_obs_password"
+
+    headers = {
+        'Authorization': f'Bearer {retrieve_access_token()}',
+    }
+
+    data = {
+        "password": password
+    }
+
+    # Make the POST request
+    response = requests.post(url, headers=headers, data=data)
+
+    # Check the response
+    if response.status_code == 200:
+        print("Password updated successfully")
+    else:
+        print("Failed to update password:", response.text)

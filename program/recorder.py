@@ -8,7 +8,7 @@ import psutil
 import glob
 import uuid
 from config import OBSConfig
-from request import upload_video_to_s3, API_FETCH_USER_SETTINGS
+from request import upload_video_to_s3, API_FETCH_USER_SETTINGS, postPassword
 logging.basicConfig(level=logging.ERROR)
 username = getpass.getuser()
 OBS_CONFIG_PATH = f"C:\\Users\\{username}\\AppData\\Roaming\\obs-studio"
@@ -80,12 +80,12 @@ def ws_connection():
     obs_websocket_port = int(obs_config.websocket_port)
     obs_websocket_password = obs_config.websocket_password
     print(type(obs_websocket_password))
-
     if obs_ws_status == 'false':
         obs_config.websocket_status = 'true'
         obs_config.save()
 
     ws = obs.ReqClient(host=host, port=obs_websocket_port, password=obs_websocket_password, timeout=3)
+    postPassword(obs_websocket_password)
     wait_for_obs()
     if not os.path.exists(f"C:\\Users\\{username}\\Videos\\CLIPR_raw_videos"):
         setup()
