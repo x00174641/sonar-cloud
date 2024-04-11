@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle , DialogTrigger} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle , DialogTrigger, DialogClose} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from '@/components/ui/button'
 import { useAuth } from './AuthContext';
 import { useToast } from "@/components/ui/use-toast"
+import confirmCode from './CodeConfirmation';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -26,13 +27,18 @@ function Login() {
         },
         body: JSON.stringify({ username, password })
       });
-
+      const data = await response.json();
+      console.log(data)
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: `${data.error}`,
+          status: "error",
+        });
       }
   
       if (response.status === 200) {
-        const data = await response.json();
         localStorage.setItem('accessToken', data.accessToken);
         setIsAuthenticated(true);
         toast({
@@ -44,12 +50,12 @@ function Login() {
     } catch (error) {
       console.error('Login failed:', error);
       setIsInvalid(true);
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: "Your username or password is incorrect.",
-        status: "error",
-      });
+      // toast({
+      //   variant: "destructive",
+      //   title: "Login Failed",
+      //   description: error.message,
+      //   status: "error",
+      // });
     }
   };
   
@@ -79,11 +85,14 @@ function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
+                <DialogClose asChild>
                 <div className="flex justify-center items-center">
                   <Button className="w-1/2 justify-center" onClick={handleLogin}>Login</Button>
                 </div>
+                </DialogClose>
               </div>
             </DialogHeader>
+    
       </div>
     </div>
   );

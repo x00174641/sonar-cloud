@@ -3,6 +3,7 @@ import os
 import hmac
 import hashlib
 import base64
+from flask import jsonify
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 
@@ -35,10 +36,8 @@ def create_user(username, email, password):
             SecretHash=secret_hash
         )
         table.put_item(Item={'username': username, 'channelName': "@" + username.lower() ,'email': email, 'videos': [], 'admin': False})
-
-        return True
+        return jsonify({'message': 'Account created successfully. Please check your email to verify your account.'}), 200
     except ClientError as e:
-        print(f"Error: {e}")
-        return False
+        return jsonify(f"{e}"), 403
 
 configure()
