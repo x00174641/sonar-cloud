@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle , DialogTrigger, DialogClose} from "@/components/ui/dialog"
+import { DialogHeader, DialogClose } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from '@/components/ui/button'
 import { useAuth } from './AuthContext';
-import { useToast } from "@/components/ui/use-toast"
-import confirmCode from './CodeConfirmation';
+import { useToast } from "@/components/ui/use-toast";
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -29,15 +28,17 @@ function Login() {
       });
       const data = await response.json();
       console.log(data)
-      if (!response.ok) {
+      if (response.status == 403) {
+        console.log(response.status)
+        window.location.href = `/confirm_user/${username}`;
+      } else {
         toast({
-          variant: "destructive",
-          title: "Login Failed",
+          title: "Error",
           description: `${data.error}`,
-          status: "error",
+          status: "success",
+          variant: "destructive"
         });
       }
-  
       if (response.status === 200) {
         localStorage.setItem('accessToken', data.accessToken);
         setIsAuthenticated(true);
@@ -50,49 +51,42 @@ function Login() {
     } catch (error) {
       console.error('Login failed:', error);
       setIsInvalid(true);
-      // toast({
-      //   variant: "destructive",
-      //   title: "Login Failed",
-      //   description: error.message,
-      //   status: "error",
-      // });
     }
   };
   
   return (
     <div>
       <div className="px-4 py-2">
-            <DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className={`grid grid-cols-4 items-center gap-4 ${isInvalid ? 'text-red-500' : ''}`}>
-                  <Label htmlFor="username" className="text-right">Username</Label>
-                  <Input 
-                    id="username" 
-                    placeholder="Clipr Username" 
-                    className={`col-span-3 ${isInvalid ? 'border-red-500' : ''}`} 
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-                <div className={`grid grid-cols-4 items-center gap-4 ${isInvalid ? 'text-red-500' : ''}`}>
-                  <Label htmlFor="password" className="text-right">Password</Label>
-                  <Input 
-                    type="password" 
-                    id="password" 
-                    placeholder="Clipr Password" 
-                    className={`col-span-3 ${isInvalid ? 'border-red-500' : ''}`} 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-                <DialogClose asChild>
-                <div className="flex justify-center items-center">
-                  <Button className="w-1/2 justify-center" onClick={handleLogin}>Login</Button>
-                </div>
-                </DialogClose>
+        <DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className={`grid grid-cols-4 items-center gap-4 ${isInvalid ? 'text-red-500' : ''}`}>
+              <Label htmlFor="username" className="text-right">Username</Label>
+              <Input 
+                id="username" 
+                placeholder="Clipr Username" 
+                className={`col-span-3 ${isInvalid ? 'border-red-500' : ''}`} 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            <div className={`grid grid-cols-4 items-center gap-4 ${isInvalid ? 'text-red-500' : ''}`}>
+              <Label htmlFor="password" className="text-right">Password</Label>
+              <Input 
+                type="password" 
+                id="password" 
+                placeholder="Clipr Password" 
+                className={`col-span-3 ${isInvalid ? 'border-red-500' : ''}`} 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <DialogClose asChild>
+              <div className="flex justify-center items-center">
+                <Button className="w-1/2 justify-center" onClick={handleLogin}>Login</Button>
               </div>
-            </DialogHeader>
-    
+            </DialogClose>
+          </div>
+        </DialogHeader>
       </div>
     </div>
   );

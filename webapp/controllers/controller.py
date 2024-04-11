@@ -71,9 +71,9 @@ def login():
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == 'UserNotConfirmedException':
-                return jsonify({'error': 'Account not confirmed'}), 403
+                return jsonify({'error': e.response['Error']['Message']}), 403
             else:
-                return jsonify({'error': 'Login failed'}), 401
+                return jsonify({'error': e.response['Error']['Message']}), 401
     return jsonify({'message': 'Invalid request method'}), 405
 
 @app.route('/videos/<videoID>')

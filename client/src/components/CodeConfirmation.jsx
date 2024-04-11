@@ -33,7 +33,7 @@ function ConfirmCode() {
         console.log(data.success);
         toast({
           title: "Confirmation Code Success",
-          description: `${data.success}\nRedirecting you...`,
+          description: `${data.success}\nYou can login successfully now.`,
           status: "success",
         });
         setTimeout(() => {

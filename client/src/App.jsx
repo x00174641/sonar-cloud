@@ -24,7 +24,7 @@ function App() {
         <Route path="/discovery" element={<Discovery />}/>
         <Route path="/admin" element={<Admin />}/>
         <Route path="/camera" element={<CameraFeed />}/>
-        <Route path="/test/:username" element={<ConfirmCode />}/>
+        <Route path="/confirm_user/:username" element={<ConfirmCode />}/>
         <Route path="/user/channel/:username" element={<UserChannel />}/>
       </Routes>
     </Router>
