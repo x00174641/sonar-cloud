@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React from 'react';
+import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faSearch, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import {
     Tabs,
     TabsContent,
@@ -18,8 +19,7 @@ import {
 } from "@/components/ui/dialog"
 
 
-const Footer = ({ children }) => {
-
+const Header = ({ children }) => {
     const { isAuthenticated, setIsAuthenticated } = useAuth();
     const { toast } = useToast();
 
@@ -34,17 +34,20 @@ const Footer = ({ children }) => {
     };
 
     return (
-        <nav className="p-4 flex justify-between items-center transparent">
+        <nav className="p-4 flex justify-between items-center transparent fixed top-0 w-full z-10">
             <div className="flex items-center">
-                <span className="text-white font-semibold text-2xl">CLIPR SOLUTIONS</span>
+                <a href="/"><span className="text-white font-semibold text-2xl">CLIPR SOLUTIONS</span></a>
             </div>
             {isAuthenticated ? (
                 <>
-                    <div onClick={logout}>
-                        <FontAwesomeIcon
-                            icon={faSignOutAlt}
+                    <div className="flex items-center">
+
+                        <a href="/discovery"><FontAwesomeIcon
+                            icon={faSearch}
                             size="2x"
-                        />
+                            className="mr-7"
+                        /></a>
+                        <Button onClick={logout}>Logout</Button>
                     </div>
                 </>
             ) : (
@@ -57,12 +60,8 @@ const Footer = ({ children }) => {
                                     size="2x"
                                     className="mr-7"
                                 /></a>
-                                <FontAwesomeIcon
-                                    className='cursor-pointer'
-                                    icon={faUser}
-                                    onClick={() => handleIconClick('login')}
-                                    size="2x"
-                                />
+                                <Button>Login</Button>
+
                             </div>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px] outline-none">
@@ -80,11 +79,11 @@ const Footer = ({ children }) => {
                             </Tabs>
                         </DialogContent>
                     </Dialog>
-
                 </>
             )}
             {children}
         </nav>
     );
 };
-export default Footer;
+
+export default Header;

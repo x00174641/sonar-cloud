@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogTrigger, DialogContent, DialogClose, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -29,6 +29,20 @@ const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  const handleCopyLink = async (link) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setLinkCopied(true);
+      setTimeout(() => {
+        setLinkCopied(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to copy link: ', error);
     }
   };
 
@@ -102,8 +116,8 @@ const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
                         readOnly
                       />
                     </div>
-                    <Button type="submit" size="sm" className="px-3">
-                      <FaCopy className="h-4 w-4" />
+                    <Button type="button" size="sm" className="px-3" onClick={() => handleCopyLink(`http://localhost:5173/clip/${video}`)}>
+                      {linkCopied ? "Copied" : <FaCopy className="h-4 w-4" />}
                     </Button>
                   </div>
                   <DialogFooter className="sm:justify-start">
@@ -117,14 +131,9 @@ const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
               </Dialog>
             </DialogContent>
           </Dialog>
-          
         </div>
-
-        
       ))}
-      
     </div>
-    
   );
 };
 

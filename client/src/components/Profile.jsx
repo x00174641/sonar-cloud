@@ -24,7 +24,7 @@ function Profile() {
   return (
     <div>
       <VideoContainer>
-        <div className="flex items-center">
+        <div className="flex items-center mt-20">
           <div className="ml-7 w-32 h-32">
             <img
               src={Image}
