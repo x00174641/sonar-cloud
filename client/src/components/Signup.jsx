@@ -46,6 +46,7 @@ function Signup() {
                 title: data.message,
                 status: "success",
                 });
+                window.location.href = `/confirm_user/${username}`;
             }
 
         } catch (error) {

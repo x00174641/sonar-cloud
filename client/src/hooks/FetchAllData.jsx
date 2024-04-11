@@ -4,14 +4,15 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { bouncy } from 'ldrs'
-
+import { Input } from "@/components/ui/input";
+import VideoContainer from '../components/ui/VideoContainer'
 function VideosComponent() {
     const [videoIDs, setVideoIDs] = useState([]);
     const [randomVideos, setRandomVideos] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeIndex, setActiveIndex] = useState(1);
-    const [videos, setVideos] = useState({}); 
+    const [videos, setVideos] = useState({});
     bouncy.register()
 
     useEffect(() => {
@@ -76,51 +77,10 @@ function VideosComponent() {
 
     return (
         <>
-            <h1 className="text-center text-2xl" style={{ marginTop: '50px', marginBottom: '20px' }}>Recommended Videos</h1>
-            <div className="flex flex-wrap items-center justify-center">
-                <Carousel
-                    opts={{
-                        align: "start",
-                    }}
-                    className="w-full w-[1500px]"
-                >
-                    <CarouselContent>
-                        {randomVideos.map((video, index) => (
-                            <CarouselItem
-                                key={index}
-                                className={`md:basis-1/2 lg:basis-1/3`}
-                            >
-                                <Card className="flex items-center justify-center" style={{ marginTop: '50px' }}>
-                                    <a href={`/clip/${video.videoID}`}>
-                                        <video className={`rounded-lg ${index === activeIndex ? '-translate-y-8 opacity-100 duration-1000  ease-in-out' : 'hover:duration-300 hover:opacity-60 opacity-30 mb-2'}`}>
-                                            <source src={`https://cliprbucket.s3.amazonaws.com/videos/${video.videoID}`} type="video/mp4" />
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    </a>
-                                </Card>
 
-                                <div className="text-center p-2">
-                                    <a href={`/clip/${video.videoID}`}>
-
-                                        <p className="font-bold text-2sm">{video.title}</p>
-                                        <p className="text-muted-foreground text-xs">{video.username}</p>
-                                        <p className="text-muted-foreground text-xs">{video.total_views} views | {video.uploaded_date}</p>
-                                    
-                                    </a>
-
-                                </div>
-
-                            </CarouselItem>
-                        ))}
-
-                    </CarouselContent>
-                    <CarouselPrevious onExternalClick={decrementActiveIndex} />
-                    <CarouselNext onExternalClick={incrementActiveIndex} />
-                </Carousel>
-
-                <Separator className="my-4 w-[1700px]" />
-
-                <div className="flex flex-wrap items-center justify-center">
+            <VideoContainer>
+               
+                <div className="flex flex-wrap items-center justify-center mt-44">
                     {videoIDs.map((videoID, index) => {
                         const videoDetails = videos[videoID];
                         return (
@@ -144,7 +104,7 @@ function VideosComponent() {
                         );
                     })}
                 </div>
-            </div>
+            </VideoContainer>
         </>
     );
 }
