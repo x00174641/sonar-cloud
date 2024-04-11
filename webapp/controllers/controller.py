@@ -623,3 +623,21 @@ def confirmUser(username):
             return jsonify({"error": e}), 500
     except Exception as e:
         return jsonify({"error": "An error occurred while confirming user."}), 500
+
+@app.route('/search', methods=['GET'])
+def search_titles():
+    title = request.args.get('title').lower()
+    print(title)
+    try:
+        response = table.scan()
+        items = response['Items']
+        
+        filtered_items = []
+        for item in items:
+            if title in item['title'].lower():
+                filtered_items.append(item)
+        
+        return jsonify(filtered_items)
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Internal Server Error'}), 500
