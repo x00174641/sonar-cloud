@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AiOutlineLike } from "react-icons/ai";
 
-const LikeVideoButton = ({ videoID }) => {
+const LikeVideoButton = ({ videoID, onLike }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -26,6 +26,10 @@ const LikeVideoButton = ({ videoID }) => {
 
             const content = await response.json();
             console.log('Success:', content);
+
+            if (onLike) {
+                onLike();
+            }
         } catch (error) {
             console.error('An error occurred:', error.message);
             setError(error.message);
@@ -35,7 +39,7 @@ const LikeVideoButton = ({ videoID }) => {
     };
 
     return (
-        <AiOutlineLike onClick={likeVideo} disabled={loading}> 
+        <AiOutlineLike size="24" onClick={likeVideo} disabled={loading}> 
         </AiOutlineLike>
     );
 };

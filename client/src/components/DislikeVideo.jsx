@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SlDislike } from "react-icons/sl";
 
-const DislikeVideoButton = ({ videoID }) => {
+const DislikeVideoButton = ({ videoID, onDislike }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -26,6 +26,10 @@ const DislikeVideoButton = ({ videoID }) => {
 
             const content = await response.json();
             console.log('Success:', content);
+
+            if (onDislike) {
+                onDislike();
+            }
         } catch (error) {
             console.error('An error occurred:', error.message);
             setError(error.message);
@@ -35,7 +39,7 @@ const DislikeVideoButton = ({ videoID }) => {
     };
 
     return (
-        <SlDislike onClick={dislikeVideo} disabled={loading} /> 
+        <SlDislike size="24" onClick={dislikeVideo} disabled={loading} /> 
     );
 };
 

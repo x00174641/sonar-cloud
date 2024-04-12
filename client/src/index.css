@@ -184,6 +184,10 @@ section {
   .arrow-style {
     margin-top: 10px !important;
   }
+  
+  .line-chart-container {
+    display: none;
+  }
 }
 
 @keyframes bounce {

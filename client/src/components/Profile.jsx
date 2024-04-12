@@ -16,7 +16,6 @@ function Profile() {
   if (!decodedToken) {
     return null;
   }
-
   const switchView = (newView) => {
     setView(newView);
   };

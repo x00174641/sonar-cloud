@@ -87,9 +87,28 @@ def video(videoID):
         total_views = items[0].get('total_views')
         uploaded_date = items[0].get('upload_date')
         views_date_data = items[0].get('views')
+        channelName = items[0].get('channelName')
         tags = items[0].get('tags')
         title = items[0].get('title')
         description = items[0].get('description')
+        
+        comments = items[0].get('comments')
+        if comments:
+            commentsLen = len(comments)
+        else:
+            commentsLen = 0
+        
+        likes = items[0].get('likes')
+        if likes:
+            likesLen = len(likes)
+        else:
+            likesLen = 0
+        
+        dislikes = items[0].get('dislikes')
+        if dislikes:
+            dislikesLen = len(dislikes)
+        else:
+            dislikesLen = 0
 
         print(views_date_data)
         if not total_views:
@@ -99,13 +118,19 @@ def video(videoID):
                 'total_views': total_views,
                 'uploaded_date': uploaded_date,
                 'views_data': views_date_data,
-                'tags':tags,
+                'tags': tags,
                 'title': title,
-                'description': description
+                'description': description,
+                'channelName': channelName,
+                'comments': comments,
+                'likes': likesLen,
+                'commentsLen': commentsLen,
+                'dislikes': dislikesLen
             }), 200
 
     except Exception as e:
         return str(e), 500
+
     
 @app.route('/user/channel/<username>')
 def user_profile(username): 

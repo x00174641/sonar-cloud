@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogTitle, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-
-function AddComment({ videoID }) {
+import { useToast } from "@/components/ui/use-toast";
+import { DialogFooter } from "@/components/ui/dialog";
+function AddComment({ videoID, onCommentPosted }) {
     const [comment, setComment] = useState('');
+    const { toast } = useToast();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -24,6 +25,15 @@ function AddComment({ videoID }) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
+            if (typeof onCommentPosted === 'function') {
+                onCommentPosted();
+            }
+
+            toast({
+                title: `Your comment has been added!`,
+                status: "success",
+            });
+
             setComment('');
         } catch (error) {
             console.error('An error occurred:', error.message);
@@ -31,29 +41,17 @@ function AddComment({ videoID }) {
     };
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="outline">Add Comment</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Add a Comment</DialogTitle>
-                    <DialogDescription>
-                        Comment what you think about this video.
-                    </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit}>
-                    <Textarea
-                        placeholder="Add your comment here."
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                    />
-                    <DialogFooter>
-                        <Button type="submit">Comment</Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+        <div>
+            <Textarea
+                className="mb-2"
+                placeholder="Add your comment here."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+            />
+            <DialogFooter>
+            <Button className="comment-button" onClick={handleSubmit}>Comment</Button>
+            </DialogFooter>
+        </div>
     );
 }
 
