@@ -6,6 +6,8 @@ import AddComment from './AddComment';
 import VideoContainer from './ui/VideoContainer';
 import { Separator } from "@/components/ui/separator";
 import Chart from "chart.js/auto";
+import useFollowUser from '../hooks/FollowUser';
+import { Button } from '@/components/ui/button'
 
 function LineChart({ viewsData }) {
   useEffect(() => {
@@ -60,12 +62,14 @@ function LineChart({ viewsData }) {
 function Clip() {
   const { videoID } = useParams();
   const [videoData, setVideoData] = useState(null);
-
+  const [username, setUsername] = useState('');
   useEffect(() => {
     const fetchVideoData = async () => {
       try {
         const response = await fetch(`https://api.clipr.solutions/videos/${videoID}`);
         const data = await response.json();
+        let username = data.username
+        setUsername(username.toLowerCase())
         setVideoData(data);
       } catch (error) {
         console.error('Error fetching video data:', error);
@@ -74,6 +78,16 @@ function Clip() {
 
     fetchVideoData();
   }, [videoID]);
+
+  const { isFollowing, followUser, unfollowUser } = useFollowUser({ username });
+
+  const handleFollow = () => {
+    if (isFollowing) {
+      unfollowUser();
+    } else {
+      followUser();
+    }
+  };
 
   const fetchUpdatedVideoData = async () => {
     try {
@@ -109,6 +123,9 @@ function Clip() {
                   <p className="text-sm text-gray-500 ml-2 mr-4">{videoData.likes}</p>
                   <DislikeVideoButton videoID={videoID} onDislike={fetchUpdatedVideoData} />
                   <p className="text-sm text-gray-500 ml-2 mr-4">{videoData.dislikes}</p>
+                  <Button onClick={handleFollow}>
+                  {isFollowing ? 'Unfollow' : 'Follow'}
+                </Button>
                 </div>
                 <Separator className="mt-4" />
                 <div className="mt-4">

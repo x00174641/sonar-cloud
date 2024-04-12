@@ -2,13 +2,13 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import UserChannelGet from '../hooks/FetchUserChannel';
 import VideoContainer from './ui/VideoContainer';
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 import Image from './download.png';
 import useFollowUser from '../hooks/FollowUser'; 
 
 function UserChannel() {
   const { username } = useParams();
-  const { isFollowing, followUser, unfollowUser } = useFollowUser();
+  const { isFollowing, followUser, unfollowUser } = useFollowUser({ username });
 
   const handleFollow = () => {
     if (isFollowing) {
