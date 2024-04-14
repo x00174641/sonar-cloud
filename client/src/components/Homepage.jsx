@@ -10,6 +10,8 @@ import { FaWindows } from "react-icons/fa6";
 import { MdKeyboardDoubleArrowDown } from "react-icons/md";
 import Container2 from './ui/Container2.jsx';
 import OBS from '../assets/obs.jpg'
+import Untitled from '../assets/Untitled.mp4'
+
 function HomePage() {
     const { data } = useFetchStatistics();
     const cardData = [
@@ -38,7 +40,7 @@ function HomePage() {
                         muted
                         playsInline
                     >
-                        <source src="https://cliprbucket.s3.amazonaws.com/videos/Untitled.mp4" type="video/mp4" />
+                        <source src={Untitled} type="video/mp4" />
                     </video>
 
                     <TypeAnimation

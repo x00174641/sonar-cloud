@@ -82,6 +82,7 @@ def video(videoID):
         response = table.scan(
             FilterExpression=Attr('videoID').contains(videoID)
         )
+        
         items = response.get('Items', [])
         username = items[0].get('owner')
         total_views = items[0].get('total_views')
@@ -91,7 +92,7 @@ def video(videoID):
         tags = items[0].get('tags')
         title = items[0].get('title')
         description = items[0].get('description')
-        
+
         comments = items[0].get('comments')
         if comments:
             commentsLen = len(comments)
@@ -110,9 +111,14 @@ def video(videoID):
         else:
             dislikesLen = 0
 
-        print(views_date_data)
         if not total_views:
             total_views = 0
+
+        response2 = user_profile_table.scan(FilterExpression=Attr('channelName').contains("@" + username.lower()))
+        
+        items2 = response2.get('Items', [])
+        follower_count = len(items2[0].get('followers'))
+
         return jsonify({
                 'username': username,
                 'total_views': total_views,
@@ -125,7 +131,8 @@ def video(videoID):
                 'comments': comments,
                 'likes': likesLen,
                 'commentsLen': commentsLen,
-                'dislikes': dislikesLen
+                'dislikes': dislikesLen,
+                'follower_count': follower_count
             }), 200
 
     except Exception as e:
@@ -136,16 +143,28 @@ def video(videoID):
 def user_profile(username): 
     try:
         video_list = []
+        total_views = 0
         response = user_profile_table.scan(FilterExpression=Attr('channelName').contains(username))
-        print(response)
+        
         items = response.get('Items', [])
         username = items[0].get('username')
+        follower_count = len(items[0].get('followers'))
+        response2 = table.scan(FilterExpression=Attr('owner').contains(username))
+        
         for i in reversed(items[0].get('videos')):
             video_list.append(i.replace('videos/',''))
+            response2 = table.scan(FilterExpression=Attr('videoID').contains(i.replace('videos/','')))
+            items = response2.get('Items', [])
+            total_views += items[0].get('total_views')
+
         return jsonify({
                 'success': True,
                 'video_list': video_list,
-                'username': username
+                'username': username,
+                'total_views': total_views,
+                'follower_count': follower_count,
+                'total_videos': len(video_list),
+
             }), 200
     except Exception as e:
         return str(e), 500

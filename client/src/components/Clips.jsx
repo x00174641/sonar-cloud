@@ -112,7 +112,7 @@ function Clip() {
               </div>
               <div className="mt-4">
                 <h2 className="text-3xl font-semibold">{videoData.title}</h2>
-                <p className="text-sm text-gray-500">Uploaded by <a className='hover:underline' href={`/user/channel/${videoData.username.toLowerCase()}`}>{videoData.username}</a></p>
+                <p className="text-sm text-gray-500">Uploaded by <a className='hover:underline' href={`/user/channel/${videoData.username.toLowerCase()}`}>{videoData.username} | {videoData.follower_count} followers</a></p>
                 <div className="flex items-center mt-2">
                   <p className="text-sm text-gray-500">{videoData.total_views} views</p>
                   <span className="mx-2">•</span>
