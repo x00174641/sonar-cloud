@@ -32,20 +32,26 @@ function Signup() {
                 }),
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to sign up');
-            }
 
             const data = await response.json();
             console.log(data);
-            toast({
+            if (!response.ok) {
+                toast({
+                    title: "Error:",
+                    description: `${data}`,
+                    status: "error",
+                });
+            } else {
+                toast({
                 title: data.message,
                 status: "success",
-            });
+                });
+                window.location.href = `/confirm_user/${username}`;
+            }
+
         } catch (error) {
-            console.error('Error during signup:', error);
             toast({
-                title: "Failed to sign up",
+                title: "Error:",
                 description: error.toString(),
                 status: "error",
             });

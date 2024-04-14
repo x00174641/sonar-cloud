@@ -37,11 +37,7 @@ def signup():
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
-
-    if create_user(username, email, password):
-        return jsonify({'message': 'Account created successfully. Please check your email to verify your account.'}), 200
-    else:
-        return jsonify({'message': 'Account creation failed. Please try again.'}), 400
+    return create_user(username, email, password)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -75,9 +71,9 @@ def login():
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == 'UserNotConfirmedException':
-                return jsonify({'error': 'Account not confirmed'}), 403
+                return jsonify({'error': e.response['Error']['Message']}), 403
             else:
-                return jsonify({'error': 'Login failed'}), 401
+                return jsonify({'error': e.response['Error']['Message']}), 401
     return jsonify({'message': 'Invalid request method'}), 405
 
 @app.route('/videos/<videoID>')
@@ -86,45 +82,89 @@ def video(videoID):
         response = table.scan(
             FilterExpression=Attr('videoID').contains(videoID)
         )
+        
         items = response.get('Items', [])
         username = items[0].get('owner')
         total_views = items[0].get('total_views')
         uploaded_date = items[0].get('upload_date')
         views_date_data = items[0].get('views')
+        channelName = items[0].get('channelName')
         tags = items[0].get('tags')
         title = items[0].get('title')
         description = items[0].get('description')
 
-        print(views_date_data)
+        comments = items[0].get('comments')
+        if comments:
+            commentsLen = len(comments)
+        else:
+            commentsLen = 0
+        
+        likes = items[0].get('likes')
+        if likes:
+            likesLen = len(likes)
+        else:
+            likesLen = 0
+        
+        dislikes = items[0].get('dislikes')
+        if dislikes:
+            dislikesLen = len(dislikes)
+        else:
+            dislikesLen = 0
+
         if not total_views:
             total_views = 0
+
+        response2 = user_profile_table.scan(FilterExpression=Attr('channelName').contains("@" + username.lower()))
+        
+        items2 = response2.get('Items', [])
+        follower_count = len(items2[0].get('followers'))
+
         return jsonify({
                 'username': username,
                 'total_views': total_views,
                 'uploaded_date': uploaded_date,
                 'views_data': views_date_data,
-                'tags':tags,
+                'tags': tags,
                 'title': title,
-                'description': description
+                'description': description,
+                'channelName': channelName,
+                'comments': comments,
+                'likes': likesLen,
+                'commentsLen': commentsLen,
+                'dislikes': dislikesLen,
+                'follower_count': follower_count
             }), 200
 
     except Exception as e:
         return str(e), 500
+
     
 @app.route('/user/channel/<username>')
 def user_profile(username): 
     try:
         video_list = []
+        total_views = 0
         response = user_profile_table.scan(FilterExpression=Attr('channelName').contains(username))
-        print(response)
+        
         items = response.get('Items', [])
         username = items[0].get('username')
+        follower_count = len(items[0].get('followers'))
+        response2 = table.scan(FilterExpression=Attr('owner').contains(username))
+        
         for i in reversed(items[0].get('videos')):
             video_list.append(i.replace('videos/',''))
+            response2 = table.scan(FilterExpression=Attr('videoID').contains(i.replace('videos/','')))
+            items = response2.get('Items', [])
+            total_views += items[0].get('total_views')
+
         return jsonify({
                 'success': True,
                 'video_list': video_list,
-                'username': username
+                'username': username,
+                'total_views': total_views,
+                'follower_count': follower_count,
+                'total_videos': len(video_list),
+
             }), 200
     except Exception as e:
         return str(e), 500
@@ -516,7 +556,7 @@ def follow_user(channelName):
         item = response['Items'][0]
         followers = item.get('followers', [])
 
-        follower = {'username': follower_username, 'date': current_date}
+        follower = {'username': follower_username}
 
         if follower in followers:
             followers.remove(follower)
@@ -598,3 +638,50 @@ def postObsPassword():
 
     except Exception as e:
         return str(e), 400 
+
+
+@app.route('/confirm_user_by_code/<username>', methods=['POST'])
+def confirmUser(username):
+    try:
+        data = request.json
+        print(data.get('code'))
+        print(username)
+        secret_hash = base64.b64encode(hmac.new(
+            bytes(client_secret, 'utf-8'),
+            bytes(username + client_id, 'utf-8'),
+            digestmod=hashlib.sha256).digest()).decode()
+        response = client.confirm_sign_up(
+            ClientId=client_id,
+            Username=username,
+            ConfirmationCode=data.get('code'),
+            SecretHash=secret_hash
+        )
+        print(response)
+        return jsonify({"success": "Success! Your account is verified."}), 200
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'CodeMismatchException':
+            return jsonify({"error": "Invalid verification code provided, please try again."}), 403
+        elif e.response['Error']['Code'] == 'LimitExceededException':
+            return jsonify({"error": "Attempt limit exceeded, please try after some time."}), 403
+        else:
+            return jsonify({"error": e}), 500
+    except Exception as e:
+        return jsonify({"error": "An error occurred while confirming user."}), 500
+
+@app.route('/search', methods=['GET'])
+def search_titles():
+    title = request.args.get('title').lower()
+    print(title)
+    try:
+        response = table.scan()
+        items = response['Items']
+        
+        filtered_items = []
+        for item in items:
+            if title in item['title'].lower():
+                filtered_items.append(item)
+        
+        return jsonify(filtered_items)
+    except Exception as e:
+        print(e)
+        return jsonify({'error': 'Internal Server Error'}), 500

@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button"
 
-function useFollowUser() {
-    const { username } = useParams();
+function useFollowUser(props) {
+    const { username } = props;
     const [isFollowing, setIsFollowing] = useState(false);
     const { toast } = useToast();
     
@@ -49,19 +47,19 @@ function useFollowUser() {
                 toast({
                     title: `Success, you're following ${username}!`,
                     status: "success",
-                  });
+                });
             } else {
                 toast({
                     title: `Error: You cannot follow this user.`,
                     status: "error",
-                  });
+                });
             }
         } catch (error) {
             console.error('Error following user:', error);
             toast({
                 title: `Error, following ${username}!`,
                 status: "error",
-              });
+            });
         }
     };
 
@@ -69,7 +67,7 @@ function useFollowUser() {
         try {
             const token = localStorage.getItem('accessToken');
             const response = await fetch(`https://api.clipr.solutions/follow_user/${username}`, {
-                method: 'POST',
+                method: 'POST', // Change method to DELETE for unfollow
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
@@ -80,19 +78,19 @@ function useFollowUser() {
                 toast({
                     title: `Success, unfollowed ${username}!`,
                     status: "success",
-                  });
+                });
             } else {
                 toast({
                     title: `Error`,
                     status: "error",
-                  });
+                });
             }
         } catch (error) {
             console.error('Error unfollowing user:', error);
             toast({
                 title: `Error: ${error}`,
                 status: "error",
-              });
+            });
         }
     };
 

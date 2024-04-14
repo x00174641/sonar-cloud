@@ -1,10 +1,17 @@
 import { useState } from 'react';
-import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogTitle, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from './AuthContext';
+import Login from './Login';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
+import Signup from "@/components/Signup";
 
-function AddComment({ videoID }) {
+function AddComment({ videoID, onCommentPosted }) {
     const [comment, setComment] = useState('');
+    const { toast } = useToast();
+    const { isAuthenticated, setIsAuthenticated } = useAuth();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -24,6 +31,15 @@ function AddComment({ videoID }) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
+            if (typeof onCommentPosted === 'function') {
+                onCommentPosted();
+            }
+
+            toast({
+                title: `Your comment has been added!`,
+                status: "success",
+            });
+
             setComment('');
         } catch (error) {
             console.error('An error occurred:', error.message);
@@ -31,29 +47,51 @@ function AddComment({ videoID }) {
     };
 
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="outline">Add Comment</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>Add a Comment</DialogTitle>
-                    <DialogDescription>
-                        Comment what you think about this video.
-                    </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit}>
+        <div>
+            {isAuthenticated ? (
+                <div>
                     <Textarea
+                        className="mb-2"
                         placeholder="Add your comment here."
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                     />
                     <DialogFooter>
-                        <Button type="submit">Comment</Button>
+                        <Button className="comment-button" onClick={handleSubmit}>Comment</Button>
                     </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+                </div>
+            ) : (
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <div>
+                            <Textarea
+                                className="mb-2"
+                                placeholder="Add your comment here."
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                            />
+                            <DialogFooter>
+                                <Button className="comment-button">Comment</Button>
+                            </DialogFooter>
+                        </div>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px] outline-none">
+                        <Tabs defaultValue="Login" className="w-[370px] outline-none">
+                            <TabsList className="grid w-full grid-cols-2 outline-none">
+                                <TabsTrigger value="Login">Login</TabsTrigger>
+                                <TabsTrigger value="Signup">Sign up</TabsTrigger>
+                            </TabsList>
+                            <TabsContent className="outline-none" value="Login">
+                                <Login />
+                            </TabsContent>
+                            <TabsContent className="outline-none" value="Signup">
+                                <Signup />
+                            </TabsContent>
+                        </Tabs>
+                    </DialogContent>
+                </Dialog>
+            )}
+        </div>
     );
 }
 

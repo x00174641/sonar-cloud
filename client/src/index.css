@@ -133,6 +133,16 @@ section {
   display: flex;
 }
 
+.not-found-text {
+  font-size: 8rem;
+  animation: bounce 2s infinite alternate; 
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-20px); }
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -143,7 +153,7 @@ section {
   body {
     background-size: cover;
     @apply text-foreground;
-    background: linear-gradient(40deg, #111111, #121212);
+    @apply bg-background;
   }
 }
 
@@ -173,6 +183,10 @@ section {
 
   .arrow-style {
     margin-top: 10px !important;
+  }
+  
+  .line-chart-container {
+    display: none;
   }
 }
 
