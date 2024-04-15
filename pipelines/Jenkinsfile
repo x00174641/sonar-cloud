@@ -29,7 +29,7 @@ pipeline {
         stage('Install pytest') {
             steps {
                 script {
-                    sh "chmod +x -R ${env.WORKSPACE}"
+                    sh "chmod 777 ${env.WORKSPACE}"
                     sh '. venv/bin/activate && pip install pytest'
                 }
             }
