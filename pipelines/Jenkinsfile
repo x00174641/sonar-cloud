@@ -18,11 +18,11 @@ pipeline {
             }
         }
 
-        stage('Install pytest') {
+        stage('Install dependencies') {
             steps {
                 script {
                     sh "chmod -R 777 ${env.WORKSPACE}"
-                    sh '. venv/bin/activate && pip install pytest && pip install -r requirements.txt'
+                    sh '. venv/bin/activate && pip install -r requirements.txt'
                 }
             }
         }
@@ -30,7 +30,11 @@ pipeline {
         stage('Run unittests') {
             steps {
                 script {
-                    sh 'export PYTHONPATH="${env.WORKSPACE}/code-and-docs-x00174641:$PYTHONPATH" && . venv/bin/activate && pytest -W ignore::DeprecationWarning'
+                    sh '''
+                    export PYTHONPATH="${env.WORKSPACE}/code-and-docs-x00174641:$PYTHONPATH"
+                    . venv/bin/activate
+                    pytest -W ignore::DeprecationWarning
+                    '''
                 }
             }
         }
