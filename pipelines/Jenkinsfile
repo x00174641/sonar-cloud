@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(name: 'BRANCH', choices: ['prod', 'dev'], description: 'Select the branch to build & deploy')
+    }
+
     environment {
         VENV = 'venv'
     }
