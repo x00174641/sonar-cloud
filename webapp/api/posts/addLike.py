@@ -50,7 +50,7 @@ def likeVideo():
                     ':likes': likes
                 },
             )
-            return jsonify({'status': 'success', 'message': 'Like removed'})
+            return jsonify({'status': 'success', 'message': 'Like removed'}), 200
         else:
             response = table.update_item(
                 Key={
@@ -62,6 +62,6 @@ def likeVideo():
                     ':empty_list': []
                 },
             )
-            return jsonify({'status': 'success', 'message': 'Like added'})
+            return jsonify({'status': 'success', 'message': 'Like added'}), 200
     else:
-        return jsonify({'status': 'error', 'message': 'Video not found'})
+        return jsonify({'status': 'error', 'message': 'Video not found'}), 404

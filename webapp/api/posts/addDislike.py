@@ -49,7 +49,7 @@ def dislikeVideo():
                     ':dislikes': dislikes 
                 },
             )
-            return jsonify({'status': 'success', 'message': 'Dislike removed'})
+            return jsonify({'status': 'success', 'message': 'Dislike removed'}), 200
         else:
             response = table.update_item(
                 Key={
@@ -61,6 +61,6 @@ def dislikeVideo():
                     ':empty_list': []
                 },
             )
-            return jsonify({'status': 'success', 'message': 'Dislike added'}) 
+            return jsonify({'status': 'success', 'message': 'Dislike added'}), 200
     else:
-        return jsonify({'status': 'error', 'message': 'Video not found'})
+        return jsonify({'status': 'error', 'message': 'Video not found'}), 404
