@@ -25,6 +25,12 @@ pipeline {
             }
         }
 
+        stage('Install pytest') {
+            steps {
+                sh 'pip install pytest'
+            }
+        }
+
         stage('Run unittests') {
             steps {
                 sh "/usr/bin/env python3 -m pytest -W ignore::DeprecationWarning"
