@@ -4,6 +4,7 @@ pipeline {
     environment {
         VENV = 'venv'
         PYTHONPATH = '/root/code-and-docs-x00174641'
+        HOME = "${env.WORKSPACE}" // Set HOME to the workspace directory
     }
 
     stages {
