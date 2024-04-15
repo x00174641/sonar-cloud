@@ -28,7 +28,8 @@ pipeline {
         stage('Install pytest') {
             steps {
                 script {
-                    sh '. venv/bin/activate && pip install pytest --target .'
+                    sh "chmod +x -R ${env.WORKSPACE}"
+                    sh '. venv/bin/activate && pip install'
                 }
             }
         }
