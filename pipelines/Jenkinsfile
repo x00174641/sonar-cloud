@@ -24,6 +24,7 @@ pipeline {
                 script {
                     sh "chmod -R 777 ${env.WORKSPACE}"
                     sh '. venv/bin/activate && pip install pytest'
+                    sh 'pip install -r requirements.txt'
                 }
             }
         }
