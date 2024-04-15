@@ -1,6 +1,8 @@
 import secrets
 from flask import Flask
 from flask_cors import CORS
+from flask import request
+import jwt
 app = Flask("webapp")
 from webapp.api.posts import *
 from webapp.api.gets import *
