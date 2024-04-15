@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     sh "chmod -R 777 ${env.WORKSPACE}"
-                    sh '. venv/bin/activate && pip install -r requirements.txt && pip install flask_cors'
+                    sh '. venv/bin/activate && pip install -r requirements.txt && pip install flask_cors && pip install jwt'
                 }
             }
         }
