@@ -38,5 +38,16 @@ pipeline {
                 }
             }
         }
+        stage('Build WebApp') {
+            steps {
+                script {
+                    sh '''
+                    cd client
+                    npm install
+                    npm build
+                    '''
+                }
+            }
+        }
     }
 }
