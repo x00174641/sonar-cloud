@@ -27,7 +27,9 @@ pipeline {
 
         stage('Install pytest') {
             steps {
-                sh 'pip install pytest'
+                script {
+                    sh '. venv/bin/activate && pip install pytest'
+                }
             }
         }
 
