@@ -7,6 +7,8 @@ pipeline {
 
     environment {
         VENV = 'venv'
+        SECRET_KEY = "${SECRET_KEY_SSH_DO}"
+        SSH_HOST = "${SSH_HOST_IP_ADDRESS}"
     }
 
     stages {
@@ -50,6 +52,14 @@ pipeline {
                     npm install
                     npm run build
                     '''
+                }
+            }
+        }
+        stage('SSH into DO Droplet') {
+            steps {
+                script {
+                    sshCommand = "sshpass -p ${env.SSH_PASSWORD} ssh root@${env.SSH_HOST} 'ls -l'"
+                    sh sshCommand
                 }
             }
         }
