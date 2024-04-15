@@ -31,8 +31,7 @@ pipeline {
         stage('Run unittests') {
             steps {
                 script {
-                    sh 'export PYTHONPATH="$PYTHONPATH"'
-                    sh '. venv/bin/activate && pytest -W ignore::DeprecationWarning'
+                    sh 'export PYTHONPATH="$PYTHONPATH" && . venv/bin/activate && pytest -W ignore::DeprecationWarning'
                 }
             }
         }
