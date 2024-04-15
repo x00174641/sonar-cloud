@@ -30,7 +30,9 @@ pipeline {
 
         stage('Run unittests') {
             steps {
-                sh "/usr/bin/env python3 -m pytest -W ignore::DeprecationWarning"
+                script {
+                    sh '. venv/bin/activate && pytest -W ignore::DeprecationWarning'
+                }
             }
         }
     }
