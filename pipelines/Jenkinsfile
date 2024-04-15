@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         VENV = 'venv'
+        PYTHONPATH = '/root/code-and-docs-x00174641'
     }
 
     stages {
@@ -18,9 +19,15 @@ pipeline {
             }
         }
 
+        stage('Set PYTHONPATH') {
+            steps {
+                sh 'export PYTHONPATH="$PYTHONPATH"'
+            }
+        }
+
         stage('Run unittests') {
             steps {
-                sh "python -m pytest -W ignore::DeprecationWarning"
+                sh "/usr/bin/python -m pytest -W ignore::DeprecationWarning"
             }
         }
     }
