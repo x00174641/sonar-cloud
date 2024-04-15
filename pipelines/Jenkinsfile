@@ -3,8 +3,7 @@ pipeline {
 
     environment {
         VENV = 'venv'
-        PYTHONPATH = '/root/code-and-docs-x00174641'
-        HOME = "${env.WORKSPACE}" // Set HOME to the workspace directory
+        PYTHONPATH = "${env.WORKSPACE}/code-and-docs-x00174641"
     }
 
     stages {
@@ -20,16 +19,10 @@ pipeline {
             }
         }
 
-        stage('Set PYTHONPATH') {
-            steps {
-                sh 'export PYTHONPATH="$PYTHONPATH"'
-            }
-        }
-
         stage('Install pytest') {
             steps {
                 script {
-                    sh "chmod 777 ${env.WORKSPACE}"
+                    sh "chmod -R 777 ${env.WORKSPACE}"
                     sh '. venv/bin/activate && pip install pytest'
                 }
             }
