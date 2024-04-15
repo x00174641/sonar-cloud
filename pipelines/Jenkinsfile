@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    export PYTHONPATH="${env.WORKSPACE}/code-and-docs-x00174641:$PYTHONPATH"
+                    export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
                     . venv/bin/activate
                     pytest -W ignore::DeprecationWarning
                     '''
