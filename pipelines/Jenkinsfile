@@ -58,8 +58,8 @@ pipeline {
         stage('Install sshpass') {
             steps {
                 script {
-                    sh 'apt-get update -y'
-                    sh 'apt-get install -y sshpass'
+                    sh 'sudo -S apt-get update -y < /dev/null'
+                    sh 'echo "password" | sudo -S apt-get install -y sshpass < /dev/null'
                 }
             }
         }
