@@ -58,7 +58,7 @@ pipeline {
         stage('SSH into DO Droplet') {
             steps {
                 script {
-                    sshCommand = "sshpass -p ${env.SSH_PASSWORD} ssh root@${env.SSH_HOST} 'ls -l'"
+                    sshCommand = "sshpass -p ${env.SECRET_KEY} ssh root@${env.SSH_HOST} 'ls -l'"
                     sh sshCommand
                 }
             }
