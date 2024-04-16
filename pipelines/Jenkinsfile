@@ -7,7 +7,6 @@ pipeline {
 
     environment {
         VENV = 'venv'
-        SECRET_KEY = "${SECRET_KEY_SSH_DO}"
         SSH_HOST = "${SSH_HOST_IP_ADDRESS}"
     }
 
@@ -55,19 +54,12 @@ pipeline {
                 }
             }
         }
-        stage('Install sshpass') {
-            steps {
-                script {
-                    sh 'sudo -S apt-get update -y < /dev/null'
-                    sh 'echo "password" | sudo -S apt-get install -y sshpass < /dev/null'
-                }
-            }
-        }
         stage('SSH into DO Droplet') {
             steps {
                 script {
-                    sshCommand = "sshpass -p ${env.SECRET_KEY} ssh root@${env.SSH_HOST} 'ls -l'"
-                    sh sshCommand
+                    sshagent(credentials: ['PRIVATE_KEY']) {
+                        sh "ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} 'ls -l'"
+                    }
                 }
             }
         }
