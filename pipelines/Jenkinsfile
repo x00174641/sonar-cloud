@@ -72,10 +72,7 @@ pipeline {
                                 ls &&
                                 npm install &&
                                 npm run build
-                                ls
-                                ls
-                                ls
-                                ls
+                                scp -r ./dist/* root@139.59.160.51:/var/www/html/staging
                             '
                         """
                         // sh """
