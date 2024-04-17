@@ -43,7 +43,8 @@ pipeline {
                 }
             }
         }
-        stage('SSH into DO Droplet') {
+
+        stage('Build and deploy') {
             steps {
                 script {
                     sshagent(credentials: ['PRIVATE_KEY']) {
@@ -52,8 +53,13 @@ pipeline {
                                 cd code-and-docs-x00174641/client &&
                                 ls &&
                                 npm install &&
-                                npm run build &&
-                                scp -r ./dist/* root@139.59.160.51:/var/www/html/staging &&
+                                npm run build
+                            '
+                        """
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                cd code-and-docs-x00174641/client &&
+                                scp -r /dist/* root@139.59.160.51:/var/www/html/staging &&
                                 systemctl restart nginx
                             '
                         """
