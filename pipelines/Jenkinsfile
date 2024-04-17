@@ -56,7 +56,7 @@ pipeline {
                                 npm install &&
                                 npm run build
                             '
-                            ls
+                            cd client
                             scp -r ./dist/* root@139.59.160.51:/var/www/html/staging
                             systemctl restart nginx
                         """
