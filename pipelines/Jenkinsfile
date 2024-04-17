@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        choice(name: 'BRANCH', choices: ['staging','prod'], description: 'Select the branch to build & deploy')
+        choice(name: 'BRANCH', choices: ['staging', 'prod'], description: 'Select the branch to build & deploy')
     }
 
     environment {
@@ -40,6 +40,21 @@ pipeline {
                     . venv/bin/activate
                     pytest -W ignore::DeprecationWarning
                     '''
+                }
+            }
+        }
+
+        stage('Preparation') {
+            steps {
+                script {
+                    sshagent(credentials: ['PRIVATE_KEY']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                cd code-and-docs-x00174641/client &&
+                                npm install
+                            '
+                        """
+                    }
                 }
             }
         }
