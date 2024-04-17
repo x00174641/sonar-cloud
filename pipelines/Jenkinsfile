@@ -71,7 +71,7 @@ pipeline {
                                 git pull origin ${env.BRANCH_NAME}
                                 ls &&
                                 npm install &&
-                                npm run build
+                                npm run build &&
                                 scp -r ./dist/* root@139.59.160.51:/var/www/html/staging
                             '
                         """
