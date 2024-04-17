@@ -50,8 +50,9 @@ pipeline {
                     sshagent(credentials: ['PRIVATE_KEY']) {
                         sh """
                             ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+
                                 cd code-and-docs-x00174641/client &&
-                                git pull origin ${env.BRANCH_NAME}
+                                git checkout ${env.BRANCH_NAME}
                                 ls &&
                                 npm install &&
                                 npm run build
