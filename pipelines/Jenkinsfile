@@ -43,37 +43,20 @@ pipeline {
                 }
             }
         }
-
-        stage('Preparation') {
-            steps {
-                script {
-                    sshagent(credentials: ['PRIVATE_KEY']) {
-                        sh """
-                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                                cd code-and-docs-x00174641/client &&
-                                npm install
-                            '
-                        """
-                    }
-                }
-            }
-        }
-
         stage('Build and deploy') {
             steps {
                 script {
                     sshagent(credentials: ['PRIVATE_KEY']) {
                         sh """
                             ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-
                                 cd code-and-docs-x00174641/client &&
                                 git checkout ${env.BRANCH_NAME}
                                 git pull origin ${env.BRANCH_NAME}
                                 ls &&
                                 npm install &&
                                 npm run build &&
-                                scp -r ./dist/* root@139.59.160.51:/var/www/html/staging
                             '
+                                scp -r ./dist/* root@139.59.160.51:/var/www/html/staging
                         """
                         // sh """
                         //     set -x
