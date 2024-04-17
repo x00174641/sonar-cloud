@@ -46,19 +46,8 @@ pipeline {
         stage('Build WebApp') {
             steps {
                 script {
-                    sh '''
-                    cd client
-                    npm install
-                    npm run build
-                    '''
-                }
-            }
-        }
-        stage('SSH into DO Droplet') {
-            steps {
-                script {
                     sshagent(credentials: ['PRIVATE_KEY']) {
-                        sh "ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} 'ls -l'"
+                        sh "ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} 'cd code-and-docs-x00174641/client && npm install && npm run build'"
                     }
                 }
             }
