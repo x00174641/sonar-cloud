@@ -48,7 +48,7 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: ['PRIVATE_KEY']) {
-                        sh "ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} 'ls -l' 'cd code-and-docs-x00174641/client && npm install && npm run build'"
+                        sh "ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} 'ls' 'cd code-and-docs-x00174641/client && npm install && npm run build'"
                     }
                 }
             }
