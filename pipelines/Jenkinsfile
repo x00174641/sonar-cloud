@@ -57,7 +57,9 @@ pipeline {
                                 npm run build
                             '
                             cd client
+                            ls
                             scp -r ./dist/* root@139.59.160.51:/var/www/html/staging
+                            ls
                             ../../script.sh
                         """
                     }
