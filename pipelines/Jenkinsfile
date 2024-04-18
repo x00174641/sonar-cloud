@@ -64,6 +64,7 @@ pipeline {
                         sh """
                             ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
                             systemctl restart nginx
+                            '
                         """
                     }
                 }
