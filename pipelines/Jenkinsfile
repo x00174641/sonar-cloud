@@ -57,13 +57,17 @@ pipeline {
                                 npm install &&
                                 npm run build &&
                             '
+                        """
                         sh """
                             ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                            cp -r ./code-and-docs-x00174641/client/dist /root/staging2
+                            if cp -r ./code-and-docs-x00174641/client/dist /root/staging2; then
+                                echo 'Files copied successfully to staging directory.'
+                            else
+                                echo 'Error: Failed to copy files to staging directory.'
+                            fi
                             '
                         """
 
-                        """
                         sh """
                             ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
                                 systemctl restart nginx
