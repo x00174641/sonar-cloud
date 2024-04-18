@@ -43,10 +43,7 @@ pipeline {
                 }
             }
         }
-       pipeline {
-    agent any
 
-    stages {
         stage('Build and deploy') {
             steps {
                 script {
@@ -75,6 +72,7 @@ pipeline {
                 }
             }
         }
+
     }
 }
 
@@ -104,5 +102,3 @@ pipeline {
         //         }
         //     }
         // }
-    }
-}
