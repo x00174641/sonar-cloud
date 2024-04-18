@@ -55,7 +55,7 @@ pipeline {
                                 git pull origin ${env.BRANCH_NAME}
                                 ls &&
                                 npm install &&
-                                npm run build &&
+                                npm run build
                             '
                         """
                         sh """
