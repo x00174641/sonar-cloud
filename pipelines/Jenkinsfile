@@ -60,6 +60,9 @@ pipeline {
                             pwd
                             scp -r ./dist/* root@139.59.160.51:/var/www/html/staging
                             ls
+                        """
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
                             ../../script.sh
                         """
                     }
