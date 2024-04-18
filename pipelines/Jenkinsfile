@@ -23,26 +23,26 @@ pipeline {
             }
         }
 
-        // stage('Install dependencies') {
-        //     steps {
-        //         script {
-        //             sh "chmod -R 777 ${env.WORKSPACE}"
-        //             sh '. venv/bin/activate && pip install -r requirements.txt && pip install flask_cors && pip install jwt && pip install pytest'
-        //         }
-        //     }
-        // }
+        stage('Install dependencies') {
+            steps {
+                script {
+                    sh "chmod -R 777 ${env.WORKSPACE}"
+                    sh '. venv/bin/activate && pip install -r requirements.txt && pip install flask_cors && pip install jwt && pip install pytest'
+                }
+            }
+        }
 
-        // stage('Run unittests') {
-        //     steps {
-        //         script {
-        //             sh '''
-        //             export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
-        //             . venv/bin/activate
-        //             pytest -W ignore::DeprecationWarning
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Run unittests') {
+            steps {
+                script {
+                    sh '''
+                    export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
+                    . venv/bin/activate
+                    pytest -W ignore::DeprecationWarning
+                    '''
+                }
+            }
+        }
 
         stage('Build and deploy') {
             steps {
@@ -77,33 +77,36 @@ pipeline {
                 }
             }
         }
-
+        stage('Approval for Promotion to Production') {
+                    steps {
+                        script {
+                            input message: 'Review swap from staging to prod', ok: 'Approve'
+                        }
+                    }
+                }
+                stage('Deploy to Production') {
+                    steps {
+                        script {
+                            sshagent(credentials: ['PRIVATE_KEY']) {
+                                 sh """
+                                    ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                    if scp -r ./code-and-docs-x00174641/client/dist/* /root/prod; then
+                                        echo 'Files copied successfully to prod directory.'
+                                    else
+                                        echo 'Error: Failed to copy files to prod directory.'
+                                    fi
+                                    '
+                                """
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                    systemctl restart nginx
+                                    '
+                                """
+                            }
+                        }
+                    }
+                }
     }
 }
 
-        // stage('Approval for Promotion to Production') {
-        //     steps {
-        //         script {
-        //             input message: 'Review swap from staging to prod', ok: 'Approve'
-        //         }
-        //     }
-        // }
-        // stage('Deploy to Production') {
-        //     steps {
-        //         script {
-        //             sshagent(credentials: ['PRIVATE_KEY']) {
-        //                 sh """
-        //                     ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-        //                     cd code-and-docs-x00174641/client
-        //                     '
-        //                     scp -r ./dist/* root@139.59.160.51:/root/prod
-        //                 """
-        //                 sh """
-        //                     ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-        //                     systemctl restart nginx
-        //                     '
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
+    
