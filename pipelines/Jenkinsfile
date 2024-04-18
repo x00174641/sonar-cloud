@@ -59,7 +59,6 @@ pipeline {
                             cd client
                             pwd
                             scp -r ./dist/* root@139.59.160.51:/root/staging2
-                            git checkout main
                             ls
                         """
                         sh """
