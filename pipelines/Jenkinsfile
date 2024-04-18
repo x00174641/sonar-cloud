@@ -56,7 +56,7 @@ pipeline {
                                 ls &&
                                 npm install &&
                                 npm run build &&
-                                cp -r ./code-and-docs-x00174641/client/dist /root/staging2
+                                cp -r ./dist/ /root/staging2
                             '
                         """
                         sh """
