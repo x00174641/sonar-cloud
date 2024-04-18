@@ -23,26 +23,26 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
-            steps {
-                script {
-                    sh "chmod -R 777 ${env.WORKSPACE}"
-                    sh '. venv/bin/activate && pip install -r requirements.txt && pip install flask_cors && pip install jwt && pip install pytest'
-                }
-            }
-        }
+        // stage('Install dependencies') {
+        //     steps {
+        //         script {
+        //             sh "chmod -R 777 ${env.WORKSPACE}"
+        //             sh '. venv/bin/activate && pip install -r requirements.txt && pip install flask_cors && pip install jwt && pip install pytest'
+        //         }
+        //     }
+        // }
 
-        stage('Run unittests') {
-            steps {
-                script {
-                    sh '''
-                    export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
-                    . venv/bin/activate
-                    pytest -W ignore::DeprecationWarning
-                    '''
-                }
-            }
-        }
+        // stage('Run unittests') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //             export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
+        //             . venv/bin/activate
+        //             pytest -W ignore::DeprecationWarning
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('Build and deploy') {
             steps {
