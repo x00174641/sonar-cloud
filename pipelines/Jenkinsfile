@@ -58,7 +58,7 @@ pipeline {
                             '
                             cd client
                             scp -r ./dist/* root@139.59.160.51:/var/www/html/staging
-                            sudo systemctl restart nginx
+                            ../../script.sh
                         """
                     }
                 }
