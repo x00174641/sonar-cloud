@@ -1,10 +1,13 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(name: 'BRANCH', choices: ['staging', 'prod'], description: 'Select the branch to build & deploy')
+    }
+
     environment {
         VENV = 'venv'
-        PYTHON_ENV = "${env.PYTHON}"
-        PIP_ENV = "${env.PIP}"
+        SSH_HOST = "${SSH_HOST_IP_ADDRESS}"
     }
 
     stages {
@@ -13,28 +16,97 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Setup Python Environment') {
+        stage('Setup virtual environment') {
             steps {
-                bat "\"${env.PYTHON_ENV}\" -m venv ${VENV}"
+                sh 'python3 -m venv venv'
+                sh '. venv/bin/activate'
             }
         }
-        stage('Install Pylint') {
+
+        stage('Install dependencies') {
             steps {
-                bat "call ${VENV}\\Scripts\\activate.bat && \"${env.PIP_ENV}\" install pylint"
+                script {
+                    sh "chmod -R 777 ${env.WORKSPACE}"
+                    sh '. venv/bin/activate && pip install -r requirements.txt && pip install flask_cors && pip install jwt && pip install pytest'
+                }
             }
         }
-        stage('Code Linting') {
+
+        stage('Run Unittesting') {
             steps {
-                bat "call ${VENV}\\Scripts\\activate.bat && \"${env.PYTHON_ENV}\" -m pylint --rcfile=./pylint.rc program/"
+                script {
+                    sh '''
+                    export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
+                    . venv/bin/activate
+                    pytest -W ignore::DeprecationWarning
+                    '''
+                }
             }
         }
-    }
-    post {
-        success {
-            echo 'Success. Linting Passed.'
+
+        stage('Build and Deploy to Staging') {
+            steps {
+                script {
+                    sshagent(credentials: ['PRIVATE_KEY']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                cd code-and-docs-x00174641/client &&
+                                git checkout ${env.BRANCH_NAME}
+                                git pull origin ${env.BRANCH_NAME}
+                                ls &&
+                                npm install &&
+                                npm run build
+                            '
+                        """
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                            if scp -r ./code-and-docs-x00174641/client/dist/* /root/staging2; then
+                                echo 'Files copied successfully to staging directory.'
+                            else
+                                echo 'Error: Failed to copy files to staging directory.'
+                            fi
+                            '
+                        """
+
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                systemctl restart nginx
+                            '
+                        """
+                    }
+                }
+            }
         }
-        failure {
-            echo 'Error in linting'
+        stage('Approval for Promotion to Production') {
+                steps {
+                    script {
+                        input message: 'Review swap from staging to prod', ok: 'Approve'
+                    }
+                }
+            }
+        stage('Promote to Production') {
+                steps {
+                    script {
+                        sshagent(credentials: ['PRIVATE_KEY']) {
+                            sh """
+                                ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                if scp -r ./code-and-docs-x00174641/client/dist/* /root/prod; then
+                                    echo 'Files copied successfully to prod directory.'
+                                else
+                                    echo 'Error: Failed to copy files to prod directory.'
+                                fi
+                                    '
+                            """
+                            sh """
+                                ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                systemctl restart nginx
+                                '
+                            """
+                    }
+                }
+            }
         }
     }
 }
+
+    
