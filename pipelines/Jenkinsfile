@@ -32,7 +32,7 @@ pipeline {
             }
         }
 
-        stage('Run unittests') {
+        stage('Run Unittesting') {
             steps {
                 script {
                     sh '''
@@ -44,7 +44,7 @@ pipeline {
             }
         }
 
-        stage('Build and deploy') {
+        stage('Build and Deploy to Staging') {
             steps {
                 script {
                     sshagent(credentials: ['PRIVATE_KEY']) {
@@ -78,34 +78,34 @@ pipeline {
             }
         }
         stage('Approval for Promotion to Production') {
-                    steps {
-                        script {
-                            input message: 'Review swap from staging to prod', ok: 'Approve'
-                        }
+                steps {
+                    script {
+                        input message: 'Review swap from staging to prod', ok: 'Approve'
                     }
                 }
-                stage('Deploy to Production') {
-                    steps {
-                        script {
-                            sshagent(credentials: ['PRIVATE_KEY']) {
-                                 sh """
-                                    ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                                    if scp -r ./code-and-docs-x00174641/client/dist/* /root/prod; then
-                                        echo 'Files copied successfully to prod directory.'
-                                    else
-                                        echo 'Error: Failed to copy files to prod directory.'
-                                    fi
+            }
+        stage('Promote to Production') {
+                steps {
+                    script {
+                        sshagent(credentials: ['PRIVATE_KEY']) {
+                            sh """
+                                ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                if scp -r ./code-and-docs-x00174641/client/dist/* /root/prod; then
+                                    echo 'Files copied successfully to prod directory.'
+                                else
+                                    echo 'Error: Failed to copy files to prod directory.'
+                                fi
                                     '
-                                """
-                                sh """
-                                    ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                                    systemctl restart nginx
-                                    '
-                                """
-                            }
-                        }
+                            """
+                            sh """
+                                ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                systemctl restart nginx
+                                '
+                            """
                     }
                 }
+            }
+        }
     }
 }
 
