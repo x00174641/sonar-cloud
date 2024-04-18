@@ -43,6 +43,10 @@ pipeline {
                 }
             }
         }
+       pipeline {
+    agent any
+
+    stages {
         stage('Build and deploy') {
             steps {
                 script {
@@ -56,45 +60,49 @@ pipeline {
                                 npm install &&
                                 npm run build
                             '
-                            cd client
-                            pwd
-                            scp -r ./dist/* root@139.59.160.51:/root/staging2
-                            ls
                         """
                         sh """
                             ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                            systemctl restart nginx
+                                cp -r ./code-and-docs-x00174641/client/dist /root/staging2
+                            '
+                        """
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                systemctl restart nginx
                             '
                         """
                     }
                 }
             }
         }
-        stage('Approval for Promotion to Production') {
-            steps {
-                script {
-                    input message: 'Review swap from staging to prod', ok: 'Approve'
-                }
-            }
-        }
-        stage('Deploy to Production') {
-            steps {
-                script {
-                    sshagent(credentials: ['PRIVATE_KEY']) {
-                        sh """
-                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                            cd code-and-docs-x00174641/client
-                            '
-                            scp -r ./dist/* root@139.59.160.51:/root/prod
-                        """
-                        sh """
-                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                            systemctl restart nginx
-                            '
-                        """
-                    }
-                }
-            }
-        }
+    }
+}
+
+        // stage('Approval for Promotion to Production') {
+        //     steps {
+        //         script {
+        //             input message: 'Review swap from staging to prod', ok: 'Approve'
+        //         }
+        //     }
+        // }
+        // stage('Deploy to Production') {
+        //     steps {
+        //         script {
+        //             sshagent(credentials: ['PRIVATE_KEY']) {
+        //                 sh """
+        //                     ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+        //                     cd code-and-docs-x00174641/client
+        //                     '
+        //                     scp -r ./dist/* root@139.59.160.51:/root/prod
+        //                 """
+        //                 sh """
+        //                     ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+        //                     systemctl restart nginx
+        //                     '
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
