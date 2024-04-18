@@ -55,11 +55,8 @@ pipeline {
                                 git pull origin ${env.BRANCH_NAME}
                                 ls &&
                                 npm install &&
-                                npm run build
-                            '
-                        """
-                        sh """
-                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                npm run build &&
+                                ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} &&
                                 cp -r ./code-and-docs-x00174641/client/dist /root/staging2
                             '
                         """
