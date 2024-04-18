@@ -57,7 +57,7 @@ function HomePage() {
                         speed={150}
                         repeat={Infinity}
                     />
-                    <small className='text-muted-foreground text-lg'>Cliprs is a user-friendly tool for recording and trimming content, enabling users to capture and share highlights effortlessly via generated links.</small>
+                    <small className='text-muted-foreground text-lg'>Cliprsfasfasdfas is a user-friendly tool for recording and trimming content, enabling users to capture and share highlights effortlessly via generated links.</small>
                     <br></br>
                     <Button style={{ fontSize: "28px" }} size="xl">Download For Windows &#8201; <FaWindows /></Button>
 
