@@ -58,7 +58,7 @@ pipeline {
                             '
                             cd client
                             pwd
-                            scp -r ./dist/* root@139.59.160.51:/var/www/html/staging
+                            scp -r ./dist/* root@139.59.160.51:/root/staging
                             ls
                         """
                         sh """
