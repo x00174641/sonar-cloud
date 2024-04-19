@@ -79,7 +79,7 @@ pipeline {
         }
         stage('K6 Load Testing') {
             steps {
-                sh 'k6 run ../tests/performance_tests/loadTest.js'
+                sh 'k6 run ./tests/performance_tests/loadTest.js'
             }
         }
         stage('Approval for Promotion to Production') {
