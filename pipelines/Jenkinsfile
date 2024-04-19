@@ -110,7 +110,13 @@ pipeline {
                 }
             }
         }
-
+        stage('Security Dependency Check') {
+                    steps {
+                        script {
+                            dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'DP-Check'
+                        }
+                    }
+                }
         stage('Approval for Promotion to Production') {
                 steps {
                     script {
