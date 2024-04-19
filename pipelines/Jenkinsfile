@@ -77,6 +77,25 @@ pipeline {
                 }
             }
         }
+
+        stage('K6 Load Testing') {
+            steps {
+                sh 'k6 run ./tests/performance_tests/loadTest.js'
+            }
+        }
+
+        stage('K6 Spike Test') {
+            steps {
+                sh 'k6 run ./tests/performance_tests/spikeTest.js'
+            }
+        }
+
+        stage('K6 Stress Test') {
+            steps {
+                sh 'k6 run ./tests/performance_tests/stressTest.js'
+            }
+        }
+
         stage('Approval for Promotion to Production') {
                 steps {
                     script {
@@ -84,6 +103,7 @@ pipeline {
                     }
                 }
             }
+
         stage('Promote to Production') {
                 steps {
                     script {
