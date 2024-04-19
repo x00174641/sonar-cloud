@@ -32,84 +32,84 @@ pipeline {
             }
         }
 
-        // stage('Run Unittesting') {
-        //     steps {
-        //         script {
-        //             sh '''
-        //             export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
-        //             . venv/bin/activate
-        //             pytest -W ignore::DeprecationWarning
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Run Unittesting') {
+            steps {
+                script {
+                    sh '''
+                    export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
+                    . venv/bin/activate
+                    pytest -W ignore::DeprecationWarning
+                    '''
+                }
+            }
+        }
 
-        // stage('Build and Deploy to Staging') {
-        //     steps {
-        //         script {
-        //             sshagent(credentials: ['PRIVATE_KEY']) {
-        //                 sh """
-        //                     ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-        //                         cd code-and-docs-x00174641/client &&
-        //                         git checkout ${env.BRANCH_NAME}
-        //                         git pull origin ${env.BRANCH_NAME}
-        //                         ls &&
-        //                         npm install &&
-        //                         npm run build
-        //                     '
-        //                 """
-        //                 sh """
-        //                     ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-        //                     if scp -r ./code-and-docs-x00174641/client/dist/* /root/staging2; then
-        //                         echo 'Files copied successfully to staging directory.'
-        //                     else
-        //                         echo 'Error: Failed to copy files to staging directory.'
-        //                     fi
-        //                     '
-        //                 """
+        stage('Build and Deploy to Staging') {
+            steps {
+                script {
+                    sshagent(credentials: ['PRIVATE_KEY']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                cd code-and-docs-x00174641/client &&
+                                git checkout ${env.BRANCH_NAME}
+                                git pull origin ${env.BRANCH_NAME}
+                                ls &&
+                                npm install &&
+                                npm run build
+                            '
+                        """
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                            if scp -r ./code-and-docs-x00174641/client/dist/* /root/staging2; then
+                                echo 'Files copied successfully to staging directory.'
+                            else
+                                echo 'Error: Failed to copy files to staging directory.'
+                            fi
+                            '
+                        """
 
-        //                 sh """
-        //                     ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-        //                         systemctl restart nginx
-        //                     '
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                systemctl restart nginx
+                            '
+                        """
+                    }
+                }
+            }
+        }
 
-        // stage('K6 Load Testing') {
-        //     steps {
-        //         sh 'k6 run ./tests/performance_tests/loadTest.js'
-        //     }
-        // }
+        stage('K6 Load Testing') {
+            steps {
+                sh 'k6 run ./tests/performance_tests/loadTest.js'
+            }
+        }
 
-        // stage('K6 Spike Test') {
-        //     steps {
-        //         sh 'k6 run ./tests/performance_tests/spikeTest.js'
-        //     }
-        // }
+        stage('K6 Spike Test') {
+            steps {
+                sh 'k6 run ./tests/performance_tests/spikeTest.js'
+            }
+        }
 
-        // stage('K6 Stress Test') {
-        //     steps {
-        //         sh 'k6 run ./tests/performance_tests/stressTest.js'
-        //     }
-        // }
+        stage('K6 Stress Test') {
+            steps {
+                sh 'k6 run ./tests/performance_tests/stressTest.js'
+            }
+        }
 
-        // stage('End to End Test') {
-        //      steps {
-        //         script {
-        //             sshagent(credentials: ['PRIVATE_KEY']) {
-        //                 sh """
-        //                     ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-        //                         cd code-and-docs-x00174641/tests/e2e
-        //                         npx playwright test --workers 6
-        //                     '
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
+        stage('End to End Test') {
+             steps {
+                script {
+                    sshagent(credentials: ['PRIVATE_KEY']) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+                                cd code-and-docs-x00174641/tests/e2e
+                                npx playwright test --workers 6
+                            '
+                        """
+                    }
+                }
+            }
+        }
         stage('Security Dependency Check') {
                     steps {
                         script {
