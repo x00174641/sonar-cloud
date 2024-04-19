@@ -32,17 +32,17 @@ pipeline {
             }
         }
 
-        // stage('Run Unittesting') {
-        //     steps {
-        //         script {
-        //             sh '''
-        //             export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
-        //             . venv/bin/activate
-        //             pytest -W ignore::DeprecationWarning
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Run Unittesting') {
+            steps {
+                script {
+                    sh '''
+                    export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
+                    . venv/bin/activate
+                    pytest -W ignore::DeprecationWarning
+                    '''
+                }
+            }
+        }
 
         stage('Build and Deploy to Staging') {
             steps {
@@ -78,23 +78,23 @@ pipeline {
             }
         }
 
-        // stage('K6 Load Testing') {
-        //     steps {
-        //         sh 'k6 run ./tests/performance_tests/loadTest.js'
-        //     }
-        // }
+        stage('K6 Load Testing') {
+            steps {
+                sh 'k6 run ./tests/performance_tests/loadTest.js'
+            }
+        }
 
-        // stage('K6 Spike Test') {
-        //     steps {
-        //         sh 'k6 run ./tests/performance_tests/spikeTest.js'
-        //     }
-        // }
+        stage('K6 Spike Test') {
+            steps {
+                sh 'k6 run ./tests/performance_tests/spikeTest.js'
+            }
+        }
 
-        // stage('K6 Stress Test') {
-        //     steps {
-        //         sh 'k6 run ./tests/performance_tests/stressTest.js'
-        //     }
-        // }
+        stage('K6 Stress Test') {
+            steps {
+                sh 'k6 run ./tests/performance_tests/stressTest.js'
+            }
+        }
 
         stage('End to End Test') {
              steps {
