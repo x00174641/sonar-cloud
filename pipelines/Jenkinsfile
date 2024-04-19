@@ -98,9 +98,10 @@ pipeline {
 
         stage('End to End Test') {
             steps {
-                sh 'cd tests/e2e && npm install && npx playwright test'
+                sh 'cd tests/e2e && npm install && npx playwright install && npx playwright test'
             }
         }
+
         stage('Approval for Promotion to Production') {
                 steps {
                     script {
