@@ -98,7 +98,7 @@ pipeline {
 
         stage('End to End Test') {
             steps {
-                sh 'cd tests/e2e && npm install && npx playwright install && npx playwright test --workers 8'
+                sh 'cd tests/e2e && npm install && npx playwright install && npx playwright install chrome && npx playwright install msedge &&  npx playwright test --workers 6'
             }
         }
 
