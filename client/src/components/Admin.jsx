@@ -6,9 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CardTitle, CardDescription, CardContent, Card } from "@/components/ui/card"
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Admin() {
     const navigate = useNavigate();
+    const { toast } = useToast();
+
     useEffect(() => {
     const checkAdminStatus = async () => {
         try {
@@ -97,6 +100,37 @@ export default function Admin() {
         fetchVideoIDs();
 
     }, []);
+
+    const deleteUser = async (username) => {
+        try {
+            const response = await fetch('https://api.clipr.solutions/deleteUser', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.accessToken}`
+                },
+                body: JSON.stringify({ username })
+            });
+            if (response.ok) {
+                const result = await response.json();
+                toast({
+                    title: "Success, deleted user!",
+                    description: result.message,
+                    status: "error",
+                  });
+                setUserData(userData.filter(user => user.Username !== username));
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Failed to delete user",
+                    status: "error",
+                  });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-gray-100/40 lg:block dark:bg-gray-800/40">
@@ -162,11 +196,7 @@ export default function Admin() {
                                             {user.CreationDate}
                                         </TableCell>
                                         <TableCell>
-                                            <Button size="sm" variant="ghost">
-                                                <FileEditIcon className="h-4 w-4" />
-                                                <span className="sr-only">Edit</span>
-                                            </Button>
-                                            <Button size="sm" variant="ghost">
+                                            <Button size="sm" variant="ghost" onClick={() => deleteUser(user.Username)}>
                                                 <Trash2Icon className="h-4 w-4" />
                                                 <span className="sr-only">Delete</span>
                                             </Button>
@@ -313,3 +343,4 @@ function Trash2Icon(props) {
         </svg>
     )
 }
+

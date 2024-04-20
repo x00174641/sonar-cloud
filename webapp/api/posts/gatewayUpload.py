@@ -56,7 +56,7 @@ def upload_video_to_s3_bucket():
         videos_table.put_item(
             Item={
                 'videoID': file_name,
-                'public': False,
+                'publicVideo': False,
                 'owner': items[0].get('username'),
                 'upload_date': current_date,
                 'title': '',

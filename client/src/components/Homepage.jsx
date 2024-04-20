@@ -15,12 +15,13 @@ import Untitled from '../assets/Untitled.mp4'
 function HomePage() {
     const { data } = useFetchStatistics();
     const cardData = [
-        { title: 'CLIPS UPLOADED', content: data.totalVideosClipped },
-        { title: 'ACCOUNTS REGISTERED', content: "3+" },
-        { title: 'CLIPS TODAY', content: "0" },
+        { title: 'Clips Uploaded', content: data.totalVideosClipped },
+        { title: 'Accounts Registered', content: data.total_users, },
+        { title: 'Todays Clips', content: data.totalClips_Today, },
+        { title: 'Total Views', content: data.total_views, },
     ];
     const backgroundVideoStyle = {
-        position: 'absolute', 
+        position: 'absolute',
         top: 0,
         left: 0,
         width: '100%',
@@ -44,19 +45,19 @@ function HomePage() {
                     </video>
 
                     <TypeAnimation
-                        
                         className='font-bold tracking-tighter bg-clip-text type-animation'
                         sequence={[
                             `CLIPR Technology`,
                             3000,
                             'Empowering Digital Transformation',
                             4000,
-                            'Driving Progress with Cutting-Edge Technology',
+                            'Leading the Future of Technology',
                             3000,
                         ]}
                         speed={150}
                         repeat={Infinity}
                     />
+
                     <small className='text-muted-foreground text-lg'>Clipr is a user-friendly tool for recording and trimming content, enabling users to capture and share highlights effortlessly via generated links.</small>
                     <br></br>
                     <Button style={{ fontSize: "28px" }} size="xl">Download For Windows &#8201; <FaWindows /></Button>

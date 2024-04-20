@@ -30,7 +30,7 @@ def video(videoID):
         tags = items[0].get('tags')
         title = items[0].get('title')
         description = items[0].get('description')
-
+        publicVideo = items[0].get('publicVideo')
         comments = items[0].get('comments')
         if comments:
             commentsLen = len(comments)
@@ -70,7 +70,8 @@ def video(videoID):
                 'likes': likesLen,
                 'commentsLen': commentsLen,
                 'dislikes': dislikesLen,
-                'follower_count': follower_count
+                'follower_count': follower_count,
+                'publicVideo': publicVideo
             }), 200
 
     except Exception as e:

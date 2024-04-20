@@ -10,7 +10,7 @@ const useFetchStatistics = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch('https:/api.clipr.solutions/statistics');
+        const response = await fetch('https://api.clipr.solutions/statistics');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
