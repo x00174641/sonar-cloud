@@ -4,17 +4,12 @@ import json
 from dotenv import load_dotenv
 import configparser
 import base64
-
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 load_dotenv()
-aws_access_key_id = os.getenv('ACCESS_KEY')
-aws_secret_access_key = os.getenv('SECRET_KEY')
-client_id = os.getenv('COGNITO_APP_CLIENT_ID')
-region_name = 'us-east-1'
-bucket_name = 'cliprbucket'
-client_secret = os.getenv('COGNITO_APP_CLIENT_SECRET')
 config = configparser.ConfigParser()
-config.read("../config/user_config.ini")
-print("Sections found:", config.sections())
+config.read("./user_config.ini")
 username = config.get('CREDENTIALS','username')
 password = config.get('CREDENTIALS','password')
 
@@ -35,14 +30,14 @@ def retrieve_id_token():
             body_data = json.loads(response_data['body'])
             id_token = body_data.get('AuthenticationResult', {}).get('IdToken')
             if id_token:
-                print("Successfully Authenticated.... Retrieved IdToken!")
+                logger.info("Successfully Authenticated.... Retrieved IdToken!")
                 return id_token
             else:
-                print("IdToken not found in the response.")
+                logger.error("IdToken not found in the response.")
         except ValueError as e:
-            print(f"Error parsing JSON response: {e}")
+            logger.error(f"Error parsing JSON response: {e}")
     else:
-        print(f"Failed to retrieve token, status code: {response.status_code}")
+        logger.error(f"Failed to retrieve token, status code: {response.status_code}")
 
 def retrieve_access_token():
     url = 'https://iol8nh69uh.execute-api.us-east-1.amazonaws.com/prod/login'
@@ -61,15 +56,15 @@ def retrieve_access_token():
             body_data = json.loads(response_data['body'])
             access_token = body_data.get('AuthenticationResult', {}).get('AccessToken')
             if access_token:
-                print(access_token)
-                print("Successfully Authenticated.... Retrieved IdToken!")
+                logger.info("Successfully Authenticated.... Retrieved AccessToken!")
+                logger.info(f"Logged in as {username}.")
                 return access_token
             else:
-                print("IdToken not found in the response.")
+                logger.error("AccessToken not found in the response.")
         except ValueError as e:
-            print(f"Error parsing JSON response: {e}")
+            logger.error(f"Error parsing JSON response: {e}")
     else:
-        print(f"Failed to retrieve token, status code: {response.status_code}")
+        logger.error(f"Failed to retrieve token, status code: {response.status_code}")
 
 def API_FETCH_USER_SETTINGS():
     url = 'https://api.clipr.solutions/user/settings'
@@ -79,7 +74,10 @@ def API_FETCH_USER_SETTINGS():
     }
 
     response = requests.get(url, headers=headers)
-    print(response.json())
+    logger.info("Hot_Key Fetched: {}".format(response.json().get('clip_hotkey')))
+    logger.info("Clip Interval To Trim: {} seconds".format(response.json().get('clip_interval')))
+    logger.info("OBS Port Fetched: {}".format(response.json().get('obs_port')))
+
     return response.json()
 
 
@@ -106,10 +104,8 @@ def upload_video_to_s3(local_video_file_path, s3_key):
         
         try:
             response_data = response.json()
-            print(response_data)
         except ValueError as e:
-            print("Error parsing JSON:", e)
-        print("Status Code:", response.status_code)
+            logger.error("Error parsing JSON:", e)
 
 def postPassword(password):
     url = "https://api.clipr.solutions/post_obs_password"
@@ -127,6 +123,6 @@ def postPassword(password):
 
     # Check the response
     if response.status_code == 200:
-        print("Password updated successfully")
+        logger.info("Password updated successfully")
     else:
-        print("Failed to update password:", response.text)
+        logger.error("Failed to update password:", response.text)
