@@ -6,7 +6,6 @@ from recorder import is_obs_installed, open_obs, ws_connection, process_latest_v
 from request import API_FETCH_USER_SETTINGS
 username = getpass.getuser()
 
-
 def print_colored_text(text):
     CYAN = '\033[96m'
     WHITE = '\033[97m'

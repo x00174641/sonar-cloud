@@ -50,14 +50,7 @@ def open_obs(directory, name):
         return subprocess.Popen(name,
                     shell=True,
                     )
-
-def first_load_obs(directory, name):
-    os.chdir(directory)
-    process = subprocess.Popen(name,
-                   shell=True,
-                   )
-    process.terminate()
-
+   
 def ws_connection(): 
     # OBS Settings
     host = "localhost"
@@ -97,14 +90,17 @@ def get_video_duration(filename):
     except Exception as e:
         logger.error(f"Error getting duration: {e}")
         return None
-    
+
 def process_latest_video():
     logging.info('Processing video for upload to S3.')
     raw_folder_path = "C:\\CLIPR_raw_videos"
     clips_folder_path = "C:\\CLIPR_clips"
 
-    file_type = '*.mp4'
-    files = glob.glob(os.path.join(raw_folder_path, file_type))
+    file_types = ['*.mp4', '*.mkv', '*.mov']
+    files = []
+    for file_type in file_types:
+        files.extend(glob.glob(os.path.join(raw_folder_path, file_type)))
+
     latest_video = max(files, key=os.path.getctime)
 
     try:
@@ -116,12 +112,13 @@ def process_latest_video():
 
         random_url = uuid.uuid4().hex
         output_filename = os.path.join(clips_folder_path, f"{random_url}.mp4")
+
         if duration > clip_interval:
             (
                 ffmpeg
                 .input(latest_video, ss=start_time)
                 .output(output_filename, t=clip_interval, c='copy')
-                .run(overwrite_output=True)
+                .run(overwrite_output=True, quiet=True)
             )
             logger.info("Video trimmed successfully and saved as" + CYAN + f"{output_filename}")
             print(RESET)
@@ -132,5 +129,4 @@ def process_latest_video():
         logger.info("Clip uploaded to Clipr: " + CYAN + f"https://clipr.solutions/clip/{random_url}")
         print(RESET)
     except Exception as e:
-        
         logger.error(f"Error processing video: {e}")
