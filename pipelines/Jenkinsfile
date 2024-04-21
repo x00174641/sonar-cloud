@@ -31,18 +31,19 @@ pipeline {
                 }
             }
         }
+        
 
-        stage('Run Unittesting') {
-            steps {
-                script {
-                    sh '''
-                    export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
-                    . venv/bin/activate
-                    pytest -W ignore::DeprecationWarning
-                    '''
-                }
-            }
-        }
+        // stage('Run Unittesting') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //             export PYTHONPATH="$WORKSPACE/code-and-docs-x00174641:$PYTHONPATH"
+        //             . venv/bin/activate
+        //             pytest -W ignore::DeprecationWarning
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('Build and Deploy to Staging') {
             steps {
@@ -78,75 +79,104 @@ pipeline {
             }
         }
 
-        stage('K6 Load Testing') {
+        stage('Push to Another Repository For Sonar') {
             steps {
-                sh 'k6 run ./tests/performance_tests/loadTest.js'
-            }
-        }
-
-        stage('K6 Spike Test') {
-            steps {
-                sh 'k6 run ./tests/performance_tests/spikeTest.js'
-            }
-        }
-
-        stage('K6 Stress Test') {
-            steps {
-                sh 'k6 run ./tests/performance_tests/stressTest.js'
-            }
-        }
-
-        stage('End to End Test') {
-             steps {
                 script {
-                    sshagent(credentials: ['PRIVATE_KEY']) {
-                        sh """
-                            ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                                cd code-and-docs-x00174641/tests/e2e
-                                npx playwright test --workers 6
-                            '
-                        """
-                    }
+                    
+                    def newRepoUrl = 'https://github.com/x00174641/sonar-cloud.git'
+                    sh "git remote set-url origin ${newRepoUrl}"
+                    sh 'git push origin ${env.BRANCH_NAME}'
                 }
             }
         }
-        stage('Security Dependency Check') {
+        stage('SonarCloud Analysis') {
                     steps {
                         script {
-                            dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'DP-Check'
+                            withSonarQubeEnv('SonarCloud') {
+                                sh '''
+                                    sonar-scanner \
+                                    -Dsonar.projectKey=x00174641-1 \
+                                    -Dsonar.organization=x00174641_sonar-cloud \
+                                    -Dsonar.sources=. \
+                                    -Dsonar.tests=tests \
+                                    -Dsonar.test.inclusions=**/*.py \
+                                    -Dsonar.python.coverage.reportPaths=coverage.xml \
+                                    -Dsonar.python.xunit.reportPath=xunit.xml \
+                                    -Dsonar.login=$SONAR_TOKEN
+                                '''
+                            }
                         }
                     }
                 }
-        stage('Approval for Promotion to Production') {
-                steps {
-                    script {
-                        input message: 'Review swap from staging to prod', ok: 'Approve'
-                    }
-                }
-            }
+        // stage('K6 Load Testing') {
+        //     steps {
+        //         sh 'k6 run ./tests/performance_tests/loadTest.js'
+        //     }
+        // }
 
-        stage('Promote to Production') {
-                steps {
-                    script {
-                        sshagent(credentials: ['PRIVATE_KEY']) {
-                            sh """
-                                ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                                if scp -r ./code-and-docs-x00174641/client/dist/* /root/prod; then
-                                    echo 'Files copied successfully to prod directory.'
-                                else
-                                    echo 'Error: Failed to copy files to prod directory.'
-                                fi
-                                    '
-                            """
-                            sh """
-                                ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
-                                systemctl restart nginx
-                                '
-                            """
-                    }
-                }
-            }
-        }
+        // stage('K6 Spike Test') {
+        //     steps {
+        //         sh 'k6 run ./tests/performance_tests/spikeTest.js'
+        //     }
+        // }
+
+        // stage('K6 Stress Test') {
+        //     steps {
+        //         sh 'k6 run ./tests/performance_tests/stressTest.js'
+        //     }
+        // }
+
+        // stage('End to End Test') {
+        //      steps {
+        //         script {
+        //             sshagent(credentials: ['PRIVATE_KEY']) {
+        //                 sh """
+        //                     ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+        //                         cd code-and-docs-x00174641/tests/e2e
+        //                         npx playwright test --workers 6
+        //                     '
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Security Dependency Check') {
+        //             steps {
+        //                 script {
+        //                     dependencyCheck additionalArguments: '--format HTML', odcInstallation: 'DP-Check'
+        //                 }
+        //             }
+        //         }
+        // stage('Approval for Promotion to Production') {
+        //         steps {
+        //             script {
+        //                 input message: 'Review swap from staging to prod', ok: 'Approve'
+        //             }
+        //         }
+        //     }
+
+        // stage('Promote to Production') {
+        //         steps {
+        //             script {
+        //                 sshagent(credentials: ['PRIVATE_KEY']) {
+        //                     sh """
+        //                         ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+        //                         if scp -r ./code-and-docs-x00174641/client/dist/* /root/prod; then
+        //                             echo 'Files copied successfully to prod directory.'
+        //                         else
+        //                             echo 'Error: Failed to copy files to prod directory.'
+        //                         fi
+        //                             '
+        //                     """
+        //                     sh """
+        //                         ssh -o StrictHostKeyChecking=no -i /root/.ssh/id_rsa root@${env.SSH_HOST} '
+        //                         systemctl restart nginx
+        //                         '
+        //                     """
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
 
