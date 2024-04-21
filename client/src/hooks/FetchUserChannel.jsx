@@ -91,6 +91,8 @@ function UserChannelGet() {
 
 function Video({ videoID }) {
     const { videoInfo, loading: videoInfoLoading, error: videoInfoError } = useVideoInfo(videoID);
+    const token = localStorage.getItem('accessToken');
+    const decodedToken = useJwtDecode(token);
 
     const incrementView = async () => {
         try {
@@ -99,7 +101,7 @@ function Video({ videoID }) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ videoID })
+                body: JSON.stringify({ videoID, username: decodedToken.username  })
             });
         } catch (error) {
             console.error('Error incrementing view:', error);

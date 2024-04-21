@@ -63,6 +63,8 @@ function Clip() {
   const { videoID } = useParams();
   const [videoData, setVideoData] = useState(null);
   const [username, setUsername] = useState('');
+  const token = localStorage.getItem('accessToken');
+  const decodedToken = useJwtDecode(token);
   useEffect(() => {
     const fetchVideoData = async () => {
       try {
@@ -79,13 +81,14 @@ function Clip() {
     fetchVideoData();
     
     const incrementView = async () => {
+      
       try {
         await fetch(`https://api.clipr.solutions/view_increment/${videoID}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ videoID })
+          body: JSON.stringify({ videoID, username: decodedToken.username })
         });
       } catch (error) {
         console.error('Error incrementing view:', error);
