@@ -69,6 +69,7 @@ function AddComment({ videoID, onCommentPosted }) {
                                 placeholder="Add your comment here."
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
+                                required
                             />
                             <DialogFooter>
                                 <Button className="comment-button">Comment</Button>
