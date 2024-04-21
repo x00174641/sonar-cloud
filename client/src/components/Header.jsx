@@ -59,7 +59,7 @@ const Header = ({ children }) => {
             <div className="flex items-center">
                 <a href="/"><span className="text-white font-semibold text-2xl">CLIPR SOLUTIONS</span></a>
             </div>
-            <div className="relative w-1/2">
+            <div className="relative w-1/2 glass">
                 <Input
                     type="text"
                     placeholder="Search..."
