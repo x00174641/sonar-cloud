@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HiOutlinePencilAlt } from "react-icons/hi";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import VideoDeleteButton from "@/components/Delete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,7 +84,7 @@ function EditVideo({ videoID, refreshData }) {
         <div>
             <Sheet>
                 <SheetTrigger>
-                    <HiOutlinePencilAlt className='ml-5 mt-1' size={18} />
+                    <HiOutlinePencilAlt size={18} />
                 </SheetTrigger>
                 <SheetContent side="left">
                     <SheetHeader>
@@ -125,9 +125,11 @@ function EditVideo({ videoID, refreshData }) {
                                 <div className="grid flex-1 gap-2">
                                     <VideoDeleteButton videoID={videoID} refreshData={refreshData} />
                                 </div>
+                                <SheetClose>
                                 <div className="grid flex-1 gap-2">
                                     <Button onClick={saveChanges}>Save Changes</Button>
                                 </div>
+                                </SheetClose>
                             </div>
                         </SheetDescription>
                     </SheetHeader>

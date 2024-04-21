@@ -80,7 +80,7 @@ const VideoList = ({ videos, videoInfo, isLoading, refreshData }) => {
                 <p className='ml-5 text-sm italic'>{videoInfo[video]?.total_views} views | Uploaded on {videoInfo[video]?.uploaded_date}</p>
                 <Drawer>
                   <DrawerTrigger asChild>
-                    <FaChartLine className='ml-7' size={18} />
+                    <FaChartLine className='ml-7 mr-5 mb-2' size={18} />
                   </DrawerTrigger>
                   <DrawerContent>
                     <DrawerHeader>

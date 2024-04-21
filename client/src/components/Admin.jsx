@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { CardTitle, CardDescription, CardContent, Card } from "@/components/ui/card"
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
 import { useToast } from "@/components/ui/use-toast";
+import EditVideo from "@/components/EditVideo";
 
 export default function Admin() {
     const navigate = useNavigate();
@@ -57,48 +58,47 @@ export default function Admin() {
         { title: 'Total Views', content: data.total_views, description: 'Views on the Platform' },
 
     ];
-    useEffect(() => {
-        const fetchVideoIDs = async () => {
-            try {
-                setIsLoading(true);
-                const response = await fetch('https://api.clipr.solutions/api/getVideos');
+    const fetchVideoIDs = async () => {
+        try {
+            setIsLoading(true);
+            const response = await fetch('https://api.clipr.solutions/api/getVideos');
+            if (!response.ok) {
+                throw new Error('Something went wrong!');
+            }
+            const data = await response.json();
+            setVideoIDs(data.video_list);
+            fetchVideoDetails(data.video_list);
+        } catch (err) {
+            setError(err.message);
+            setIsLoading(false);
+        }
+    };
+
+    const fetchVideoDetails = async (videoList) => {
+        try {
+            const videosWithDetails = await Promise.all(videoList.map(async (videoID) => {
+                const response = await fetch(`https://api.clipr.solutions/videos/${videoID}`);
                 if (!response.ok) {
-                    throw new Error('Something went wrong!');
+                    throw new Error(`Failed to fetch video info for ${videoID}`);
                 }
-                const data = await response.json();
-                setVideoIDs(data.video_list);
-                fetchVideoDetails(data.video_list);
-            } catch (err) {
-                setError(err.message);
-                setIsLoading(false);
-            }
-        };
+                const videoInfo = await response.json();
+                return { videoID, ...videoInfo };
+            }));
+            const videosObject = videosWithDetails.reduce((acc, video) => {
+                acc[video.videoID] = video;
+                return acc;
+            }, {});
+            setVideos(videosObject);
+            setRandomVideos(videosWithDetails);
+            setIsLoading(false);
+        } catch (err) {
+            setError(err.message);
+            setIsLoading(false);
+        }
+    };
 
-        const fetchVideoDetails = async (videoList) => {
-            try {
-                const videosWithDetails = await Promise.all(videoList.map(async (videoID) => {
-                    const response = await fetch(`https://api.clipr.solutions/videos/${videoID}`);
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch video info for ${videoID}`);
-                    }
-                    const videoInfo = await response.json();
-                    return { videoID, ...videoInfo };
-                }));
-                const videosObject = videosWithDetails.reduce((acc, video) => {
-                    acc[video.videoID] = video;
-                    return acc;
-                }, {});
-                setVideos(videosObject);
-                setRandomVideos(videosWithDetails);
-                setIsLoading(false);
-            } catch (err) {
-                setError(err.message);
-                setIsLoading(false);
-            }
-        };
-
+    useEffect(() => {
         fetchVideoIDs();
-
     }, []);
 
     const deleteUser = async (username) => {
@@ -130,6 +130,44 @@ export default function Admin() {
             console.error(error);
         }
     };
+    const deleteVideo = async (videoID) => {
+        try {
+          const response = await fetch(`https://api.clipr.solutions/delete/videos/?videoID=${videoID}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+              'Content-Type': 'application/json'
+            },
+          });
+    
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+          }
+    
+          const result = await response.json();
+          if (response.status === 200) {
+            toast({
+              title: `Successful, deleted ${videoID}!`,
+              status: "success",
+            });
+            fetchVideoIDs();
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Something went wrong...",
+              description: result.error,
+              status: "error",
+            });
+          }
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Something went wrong...",
+            description: error.message,
+            status: "error",
+          });
+        }
+      };
 
     return (
         <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
@@ -236,14 +274,14 @@ export default function Admin() {
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                                <Button size="sm" variant="ghost">
-                                                    <FileEditIcon className="h-4 w-4" />
-                                                    <span className="sr-only">Edit</span>
+                                                <Button variant="ghost">
+                                                    <EditVideo videoID={videos[videoID]?.videoID} refreshData={fetchVideoIDs} />
                                                 </Button>
-                                                <Button size="sm" variant="ghost">
-                                                    <Trash2Icon className="h-4 w-4" />
-                                                    <span className="sr-only">Delete</span>
-                                                </Button>
+
+                                                <Button size="sm" variant="ghost" onClick={() => deleteVideo(videos[videoID]?.videoID)}>
+                                                <Trash2Icon className="h-4 w-4" />
+                                                <span className="sr-only">Delete</span>
+                                            </Button>
                                             </TableCell>
                                     </TableRow>
                                 ))}
