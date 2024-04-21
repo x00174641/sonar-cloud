@@ -79,35 +79,36 @@ pipeline {
             }
         }
 
-        stage('Push to Another Repository For Sonar') {
+stage('Push to Another Repository For Sonar') {
             steps {
                 script {
-                    
                     def newRepoUrl = 'https://github.com/x00174641/sonar-cloud.git'
                     sh "git remote set-url origin ${newRepoUrl}"
+                    sh "git checkout -b main"
                     sh 'git push origin main'
                 }
             }
         }
+
         stage('SonarCloud Analysis') {
-                    steps {
-                        script {
-                            withSonarQubeEnv('SonarCloud') {
-                                sh '''
-                                    sonar-scanner \
-                                    -Dsonar.projectKey=x00174641-1 \
-                                    -Dsonar.organization=x00174641_sonar-cloud \
-                                    -Dsonar.sources=. \
-                                    -Dsonar.tests=tests \
-                                    -Dsonar.test.inclusions=**/*.py \
-                                    -Dsonar.python.coverage.reportPaths=coverage.xml \
-                                    -Dsonar.python.xunit.reportPath=xunit.xml \
-                                    -Dsonar.login=$SONAR_TOKEN
-                                '''
-                            }
-                        }
+            steps {
+                script {
+                    withSonarQubeEnv('SonarCloud') {
+                        sh '''
+                            sonar-scanner \
+                            -Dsonar.projectKey=x00174641-1 \
+                            -Dsonar.organization=x00174641_sonar-cloud \
+                            -Dsonar.sources=. \
+                            -Dsonar.tests=tests \
+                            -Dsonar.test.inclusions=**/*.py \
+                            -Dsonar.python.coverage.reportPaths=coverage.xml \
+                            -Dsonar.python.xunit.reportPath=xunit.xml \
+                            -Dsonar.login=$SONAR_TOKEN
+                        '''
                     }
                 }
+            }
+        }
         // stage('K6 Load Testing') {
         //     steps {
         //         sh 'k6 run ./tests/performance_tests/loadTest.js'
