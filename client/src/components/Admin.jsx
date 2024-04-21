@@ -14,30 +14,30 @@ export default function Admin() {
     const { toast } = useToast();
 
     useEffect(() => {
-    const checkAdminStatus = async () => {
-        try {
-            const response = await fetch('https://api.clipr.solutions/isAdmin', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.accessToken}`
+        const checkAdminStatus = async () => {
+            try {
+                const response = await fetch('https://api.clipr.solutions/isAdmin', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.accessToken}`
+                    }
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    if (!result.isAdmin) {
+                        navigate('4/');
+                    }
+                } else {
+                    navigate('/');
+                    throw new Error('Failed to fetch admin status');
                 }
-            });
-            if (response.ok) {
-                const result = await response.json();
-                if (!result.isAdmin) {
-                    navigate('4/');
-                }
-            } else {
-                navigate('/');
-                throw new Error('Failed to fetch admin status');
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+        };
 
-    checkAdminStatus();
-}, [navigate]);
+        checkAdminStatus();
+    }, [navigate]);
 
     const { data } = useFetchStatistics();
     const [userData, setUserData] = useState([]);
@@ -46,6 +46,7 @@ export default function Admin() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [videos, setVideos] = useState({});
+    const [sortType, setSortType] = useState(null);
     useEffect(() => {
         if (data.users) {
             setUserData(data.users);
@@ -117,14 +118,14 @@ export default function Admin() {
                     title: "Success, deleted user!",
                     description: result.message,
                     status: "error",
-                  });
+                });
                 setUserData(userData.filter(user => user.Username !== username));
             } else {
                 toast({
                     variant: "destructive",
                     title: "Failed to delete user",
                     status: "error",
-                  });
+                });
             }
         } catch (error) {
             console.error(error);
@@ -132,12 +133,52 @@ export default function Admin() {
     };
     const deleteVideo = async (videoID) => {
         try {
-          const response = await fetch(`https://api.clipr.solutions/delete/videos/?videoID=${videoID}`, {
-            method: 'DELETE',
+            const response = await fetch(`https://api.clipr.solutions/delete/videos/?videoID=${videoID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (response.status === 200) {
+                toast({
+                    title: `Successful, deleted ${videoID}!`,
+                    status: "success",
+                });
+                fetchVideoIDs();
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Something went wrong...",
+                    description: result.error,
+                    status: "error",
+                });
+            }
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Something went wrong...",
+                description: error.message,
+                status: "error",
+            });
+        }
+    };
+
+    const recommendVideo = async (videoID, videoInfo) => {
+        try {
+          const response = await fetch(`https://api.clipr.solutions/update_video`, {
+            method: 'POST',
             headers: {
-              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+              'Authorization': `Bearer ${localStorage.accessToken}`,
               'Content-Type': 'application/json'
             },
+            body: JSON.stringify({ videoID, isRecommended: true, ...videoInfo })
           });
     
           if (!response.ok) {
@@ -147,7 +188,7 @@ export default function Admin() {
           const result = await response.json();
           if (response.status === 200) {
             toast({
-              title: `Successful, deleted ${videoID}!`,
+              title: `Successful, recommended ${videoID}!`,
               status: "success",
             });
             fetchVideoIDs();
@@ -160,14 +201,69 @@ export default function Admin() {
             });
           }
         } catch (error) {
-          toast({
-            variant: "destructive",
-            title: "Something went wrong...",
-            description: error.message,
-            status: "error",
-          });
+          console.error('Error recommending video:', error);
         }
       };
+
+    const unrecommendVideo = async (videoID, videoInfo ) => {
+        try {
+            const response = await fetch(`https://api.clipr.solutions/update_video`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ videoID, isRecommended: false,...videoInfo })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (response.status === 200) {
+                toast({
+                    title: `Successful, unrecommended ${videoID}!`,
+                    status: "success",
+                });
+                fetchVideoIDs();
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Something went wrong...",
+                    description: result.error,
+                    status: "error",
+                });
+            }
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Something went wrong...",
+                description: error.message,
+                status: "error",
+            });
+        }
+    };
+
+    const sortVideosByViews = () => {
+        const sortedVideos = videoIDs.sort((a, b) => {
+            const viewsA = videos[a]?.total_views || 0;
+            const viewsB = videos[b]?.total_views || 0;
+            return sortType === "views" ? viewsA - viewsB : viewsB - viewsA;
+        });
+        setVideoIDs([...sortedVideos]);
+        setSortType(sortType === "views" ? null : "views");
+    };
+    
+    const sortVideosByRecommendation = () => {
+        const sortedVideos = videoIDs.sort((a, b) => {
+            const recommendedA = videos[a]?.isRecommended || false;
+            const recommendedB = videos[b]?.isRecommended || false;
+            return sortType === "recommendation" ? recommendedA - recommendedB : recommendedB - recommendedA;
+        });
+        setVideoIDs([...sortedVideos]);
+        setSortType(sortType === "recommendation" ? null : "recommendation");
+    };
 
     return (
         <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
@@ -252,9 +348,10 @@ export default function Admin() {
                                     <TableHead>Video URL</TableHead>
                                     <TableHead>Video Title</TableHead>
                                     <TableHead>Creation Date</TableHead>
-                                    <TableHead>Total Views</TableHead>
+                                    <TableHead>Total Views <Button variant="ghost" onClick={sortVideosByViews}>{sortType === "views" ? "▼" : "▲"}</Button></TableHead>
                                     <TableHead>Performance</TableHead>
                                     <TableHead>Actions</TableHead>
+                                    <TableHead>Recommended <Button variant="ghost" onClick={sortVideosByRecommendation}>{sortType === "recommendation" ? "▼" : "▲"}</Button></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -274,15 +371,26 @@ export default function Admin() {
                                             )}
                                         </TableCell>
                                         <TableCell>
-                                                <Button variant="ghost">
-                                                    <EditVideo videoID={videos[videoID]?.videoID} refreshData={fetchVideoIDs} />
-                                                </Button>
+                                            <Button variant="ghost">
+                                                <EditVideo videoID={videos[videoID]?.videoID} refreshData={fetchVideoIDs} />
+                                            </Button>
 
-                                                <Button size="sm" variant="ghost" onClick={() => deleteVideo(videos[videoID]?.videoID)}>
+                                            <Button size="sm" variant="ghost" onClick={() => deleteVideo(videos[videoID]?.videoID)}>
                                                 <Trash2Icon className="h-4 w-4" />
                                                 <span className="sr-only">Delete</span>
                                             </Button>
-                                            </TableCell>
+                                        </TableCell>
+                                        <TableCell>
+                                            {videos[videoID]?.isRecommended ? (
+                                                <Button variant="ghost" onClick={() => unrecommendVideo(videos[videoID]?.videoID, { title: videos[videoID]?.title, description: videos[videoID]?.description, tags: videos[videoID]?.tags })}>
+                                                    Unrecommend
+                                                </Button>
+                                            ) : (
+                                                <Button variant="ghost" onClick={() => recommendVideo(videos[videoID]?.videoID, { title: videos[videoID]?.title, description: videos[videoID]?.description, tags: videos[videoID]?.tags })}>
+                                                    Recommend
+                                                </Button>
+                                            )}
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -293,29 +401,6 @@ export default function Admin() {
         </div>
     )
 }
-
-
-function FileEditIcon(props) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M4 13.5V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2h-5.5" />
-            <polyline points="14 2 14 8 20 8" />
-            <path d="M10.42 12.61a2.1 2.1 0 1 1 2.97 2.97L7.95 21 4 22l.99-3.95 5.43-5.44Z" />
-        </svg>
-    )
-}
-
 
 function HomeIcon(props) {
     return (
@@ -381,4 +466,3 @@ function Trash2Icon(props) {
         </svg>
     )
 }
-

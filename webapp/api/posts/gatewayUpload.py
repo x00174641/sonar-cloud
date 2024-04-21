@@ -65,7 +65,8 @@ def upload_video_to_s3_bucket():
                 'views': [],
                 'likes': [],
                 'dislikes': [],
-                'comments': []
+                'comments': [],
+                'isRecommended': False
             }
         )
 

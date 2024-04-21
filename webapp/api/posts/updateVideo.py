@@ -37,16 +37,18 @@ def update_video():
     description = data.get('description', '')
     tags = data.get('tags', [])
     publicVideo = data.get('publicVideo', [])
+    isRecommended = data.get('isRecommended', [])
     response = table.update_item(
         Key={
             'videoID': videoID
         },
-        UpdateExpression='SET title = :title, description = :desc, tags = :tags, publicVideo = :publicVideo',
+        UpdateExpression='SET title = :title, description = :desc, tags = :tags, publicVideo = :publicVideo, isRecommended = :isRecommended',
         ExpressionAttributeValues={
             ':title': title,
             ':desc': description,
             ':tags': tags,
-            ':publicVideo': publicVideo
+            ':publicVideo': publicVideo,
+            ':isRecommended': isRecommended
         },
         ReturnValues="UPDATED_NEW"
     )

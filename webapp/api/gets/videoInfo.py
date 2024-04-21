@@ -32,6 +32,7 @@ def video(videoID):
         description = items[0].get('description')
         publicVideo = items[0].get('publicVideo')
         comments = items[0].get('comments')
+        isRecommended = items[0].get('isRecommended')
         if comments:
             commentsLen = len(comments)
         else:
@@ -52,6 +53,9 @@ def video(videoID):
         if not total_views:
             total_views = 0
 
+        if not isRecommended:
+            isRecommended = False
+
         response2 = user_profile_table.scan(FilterExpression=Attr('channelName').contains("@" + username.lower()))
         
         items2 = response2.get('Items', [])
@@ -71,7 +75,8 @@ def video(videoID):
                 'commentsLen': commentsLen,
                 'dislikes': dislikesLen,
                 'follower_count': follower_count,
-                'publicVideo': publicVideo
+                'publicVideo': publicVideo,
+                'isRecommended': isRecommended
             }), 200
 
     except Exception as e:
