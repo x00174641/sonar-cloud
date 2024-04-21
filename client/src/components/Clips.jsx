@@ -77,6 +77,22 @@ function Clip() {
     };
 
     fetchVideoData();
+    
+    const incrementView = async () => {
+      try {
+        await fetch(`https://api.clipr.solutions/view_increment/${videoID}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ videoID })
+        });
+      } catch (error) {
+        console.error('Error incrementing view:', error);
+      }
+    };
+
+    incrementView();
   }, [videoID]);
 
   const { isFollowing, followUser, unfollowUser } = useFollowUser({ username });
@@ -124,8 +140,8 @@ function Clip() {
                   <DislikeVideoButton videoID={videoID} onDislike={fetchUpdatedVideoData} />
                   <p className="text-sm text-gray-500 ml-2 mr-4">{videoData.dislikes}</p>
                   <Button onClick={handleFollow}>
-                  {isFollowing ? 'Unfollow' : 'Follow'}
-                </Button>
+                    {isFollowing ? 'Unfollow' : 'Follow'}
+                  </Button>
                 </div>
                 <Separator className="mt-4" />
                 <div className="mt-4">
@@ -135,7 +151,11 @@ function Clip() {
                     {videoData.comments && videoData.comments.map((comment, index) => (
                       <li key={index} className="mb-2">
                         <div className="flex items-start">
-                          <div className="rounded-full h-8 w-8 bg-gray-300 mr-2"></div>
+                          <img
+                            className="rounded-full h-8 w-8 bg-gray-300 mr-2"
+                            src={`https://ui-avatars.com/api/?uppercase=true&name=${comment.username}`}
+                            alt="User Avatar"
+                          />
                           <div>
                             <p className="text-xl">{comment.username} - <span className='text-muted-foreground text-sm'>{comment.date}</span></p>
                             <p className="text-sm text-muted-foreground">{comment.comment}</p>
@@ -155,7 +175,6 @@ function Clip() {
       )}
     </div>
   );
-
 }
 
 export default Clip;

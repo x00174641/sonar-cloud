@@ -26,11 +26,11 @@ def update_views(videoID):
         return jsonify({'error': 'Video not found'}), 404
 
     owner = items[0].get('owner')
-    # if username.lower() == owner.lower():
-    #     return jsonify({'message': 'View increment not allowed for owner'}), 200
-    # else:
-    data_to_send = json.dumps({'videoID': video_id})
-    response = requests.post('https://a255z88ipi.execute-api.us-east-1.amazonaws.com/dev/Views', data=data_to_send)
+    if username.lower() == owner.lower():
+        return jsonify({'message': 'View increment not allowed for owner'}), 200
+    else:
+        data_to_send = json.dumps({'videoID': video_id})
+        response = requests.post('https://a255z88ipi.execute-api.us-east-1.amazonaws.com/dev/Views', data=data_to_send)
     if response.status_code == 200:
         return jsonify({'message': 'View count incremented'}), 200
     else:

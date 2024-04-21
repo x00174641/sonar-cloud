@@ -92,12 +92,26 @@ function UserChannelGet() {
 function Video({ videoID }) {
     const { videoInfo, loading: videoInfoLoading, error: videoInfoError } = useVideoInfo(videoID);
 
+    const incrementView = async () => {
+        try {
+            await fetch(`https://api.clipr.solutions/view_increment/${videoID}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ videoID })
+            });
+        } catch (error) {
+            console.error('Error incrementing view:', error);
+        }
+    };
+
     if (videoInfoError) {
         return <div>Error: {videoInfoError.message}</div>;
     }
 
     return (
-        <div >
+        <div onClick={incrementView}>
             <Dialog>
                 <DialogTrigger asChild>
                     <Card>
@@ -169,7 +183,5 @@ function LoadingOverlay() {
         </div>
     );
 }
-
-
 
 export default UserChannelGet;
