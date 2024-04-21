@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import UserChannelGet from '../hooks/FetchUserChannel';
-import VideoContainer from './ui/VideoContainer';
-import { Separator } from "@/components/ui/separator";
 import useFollowUser from '../hooks/FollowUser';
-import {
-  Card,
-  CardContent,
-  CardTitle,
-} from "@/components/ui/card";
+import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
-function UserChannel() {
+export default function UserChannel() {
   const { username } = useParams();
   const { isFollowing, followUser, unfollowUser } = useFollowUser({ username });
   const [userData, setUserData] = useState({
@@ -49,43 +44,28 @@ function UserChannel() {
   };
 
   return (
-    <div>
-      <VideoContainer>
-        <div className="flex items-center mt-44">
-          <div className="ml-7">
-            <div style={{ display: 'flex', justifyContent: 'space-between'}}>
-              <Card className="mr-10"style={{ width: '30%', textAlign: 'center' }}>
-                <CardContent>
-                  <div style={{ fontSize: '44px', fontWeight: 'bold' }}>@{username}</div>
-                    <CardTitle className='text-lg underline cursor-pointer'  onClick={handleFollow} >{isFollowing ? 'Unfollow' : 'Follow'}</CardTitle>
-                </CardContent>
-              </Card>
-              <Card className="mr-10" style={{ width: '30%', textAlign: 'center' }}>
-                <CardContent>
-                  <div style={{ fontSize: '34px', }}>{userData.followerCount}</div>
-                  <CardTitle className='text-muted-foreground text-lg'>Followers</CardTitle>
-                </CardContent>
-              </Card>
-              <Card className="mr-10" style={{ width: '30%', textAlign: 'center' }}>
-                <CardContent>
-                  <div style={{ fontSize: '34px', }}>{userData.totalViews}</div>
-                  <CardTitle className='text-muted-foreground text-lg'>Views</CardTitle>
-                </CardContent>
-              </Card>
-              <Card className="mr-10" style={{ width: '30%', textAlign: 'center' }}>
-                <CardContent>
-                  <div style={{ fontSize: '34px', }}>{userData.totalVideos}</div>
-                  <CardTitle className='text-muted-foreground text-lg'>Videos</CardTitle>
-                </CardContent>
-              </Card>
+    <div className="w-full min-h-screen dark:text-gray-50 ">
+      <header className="shadow-sm">
+        <div className="container mx-auto py-4 px-4 md:px-6 flex items-center justify-between  mt-32">
+          <div className="flex items-center gap-4">
+            <Avatar className="w-10 h-10">
+              <AvatarImage alt={`@${username}`} src={`https://ui-avatars.com/api/?uppercase=true&name=${username}`} />
+              <AvatarFallback>{username.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <div className="grid gap-1">
+              <div className="font-semibold text-xl">@{username}</div>
             </div>
           </div>
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              <span className="font-semibold text-gray-900 dark:text-gray-50">{userData.followerCount} </span>
+              Followers
+            </div>
+            <Button className='cursor-pointer' onClick={handleFollow}>{isFollowing ? 'Unfollow' : 'Follow'}</Button>
+          </div>
         </div>
-        <Separator className="my-5" />
-      </VideoContainer>
+      </header>
       <UserChannelGet />
     </div>
-  );
+  )
 }
-
-export default UserChannel;
