@@ -102,25 +102,25 @@ function HomePage() {
         <section className="bg-gradient-2 w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-              <div className="flex flex-col items-start gap-4">
+              <div className="flex flex-col items-center justify-center items-start gap-4">
                 <RocketIcon className="h-8 w-8 text-gray-900 dark:text-gray-50" />
                 <h3 className="text-xl font-bold">Real Life Solutions</h3>
-                <p className="text-gray-500 dark:text-gray-400">
+                <p className="text-gray-500 dark:text-gray-400 text-center">
                   Make editing easier than ever with Cliprs Trimming Software by trimming your specified moments.
                 </p>
               </div>
-              <div className="flex flex-col items-start gap-4">
+              <div className="flex flex-col items-center justify-center items-start gap-4">
                 <GaugeIcon className="h-8 w-8 text-gray-900 dark:text-gray-50" />
                 <h3 className="text-xl font-bold">Extreme Quality Software</h3>
-                <p className="text-gray-500 dark:text-gray-400">
+                <p className="text-gray-500 dark:text-gray-400 text-center">
                  Record & Trim recordings with ease with your optimized PC specs using Open Broadcast Software.
                 </p>
               </div>
-              <div className="flex flex-col items-start gap-4">
+              <div className="flex flex-col items-center justify-center gap-4">
                 <BoldIcon className="h-8 w-8 text-gray-900 dark:text-gray-50" />
                 <h3 className="text-xl font-bold">Personalization</h3>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Continuously allowing you to elevate on customizations on cliprs software.
+                <p className="text-gray-500 dark:text-gray-400 text-center">
+                  Continuously allowing you to elevate on customizations on cutting edge software.
                 </p>
               </div>
             </div>
@@ -141,15 +141,15 @@ function HomePage() {
              
               <div className="flex justify-center gap-4">
                 <a className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50" href="#">
-                  <TwitterIcon className="h-12 w-12" />
+                  <TwitterIcon className="h-10 w-10" />
                   <span className="sr-only">Twitter</span>
                 </a>
                 <a className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50" href="https://github.com/x00174641">
-                  <GithubIcon className="h-12 w-12" />
+                  <GithubIcon className="h-10 w-10" />
                   <span className="sr-only">GitHub</span>
                 </a>
                 <a className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50" href="https://www.linkedin.com/in/fungjason1/">
-                  <LinkedinIcon className="h-12 w-12" />
+                  <LinkedinIcon className="h-10 w-10" />
                   <span className="sr-only">LinkedIn</span>
                 </a>
               </div>
@@ -169,7 +169,7 @@ function BoldIcon(props) {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
@@ -190,7 +190,7 @@ function BoldIcon(props) {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
@@ -211,7 +211,7 @@ function BoldIcon(props) {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
@@ -232,7 +232,7 @@ function BoldIcon(props) {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
@@ -254,7 +254,7 @@ function BoldIcon(props) {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
@@ -277,7 +277,7 @@ function BoldIcon(props) {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
