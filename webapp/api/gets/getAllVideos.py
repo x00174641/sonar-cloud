@@ -23,6 +23,6 @@ def getVideos():
     test = table.scan()
     print("hello")
     for i in test.get('Items'): 
-        if i.get('public') != False:
+        if i.get('publicVideo') != False:
             video_list.append(i.get('videoID'))
     return jsonify({'video_list': video_list})

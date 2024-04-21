@@ -59,32 +59,35 @@ function Profile() {
     <div>
       <VideoContainer>
         <div className="flex items-center mt-44">
-          <div className="ml-7">
-            <div style={{ display: 'flex', justifyContent: 'space-between'}}>
-              <Card className="mr-10"style={{ width: '30%', textAlign: 'center' }}>
-                <CardContent>
-                  <div style={{ fontSize: '44px', fontWeight: 'bold' }}>@{decodedToken.username}</div>
-                </CardContent>
-              </Card>
-              <Card className="mr-10" style={{ width: '30%', textAlign: 'center' }}>
-                <CardContent>
-                  <div style={{ fontSize: '34px', }}>{userData.followerCount}</div>
-                  <CardTitle className='text-muted-foreground text-lg'>Followers</CardTitle>
-                </CardContent>
-              </Card>
-              <Card className="mr-10" style={{ width: '30%', textAlign: 'center' }}>
-                <CardContent>
-                  <div style={{ fontSize: '34px', }}>{userData.totalViews}</div>
-                  <CardTitle className='text-muted-foreground text-lg'>Views</CardTitle>
-                </CardContent>
-              </Card>
-              <Card className="mr-10" style={{ width: '30%', textAlign: 'center' }}>
-                <CardContent>
-                  <div style={{ fontSize: '34px', }}>{userData.totalVideos}</div>
-                  <CardTitle className='text-muted-foreground text-lg'>Videos</CardTitle>
-                </CardContent>
-              </Card>
+          <div className="ml-7 flex items-center">
+            <img
+              src={`https://ui-avatars.com/api/?uppercase=true&name=${decodedToken.username}`}
+              alt="User Avatar"
+              className="w-20 h-20 rounded-full"
+            />
+            <div className="ml-4">
+              <div style={{ fontSize: '44px', fontWeight: 'bold' }}>@{decodedToken.username}</div>
             </div>
+          </div>
+          <div className="ml-7 flex">
+            <Card style={{ width: '30%', textAlign: 'center' }}>
+              <CardContent>
+                <div style={{ fontSize: '34px' }}>{userData.followerCount}</div>
+                <CardTitle className='text-muted-foreground text-lg'>Followers</CardTitle>
+              </CardContent>
+            </Card>
+            <Card className="ml-7" style={{ width: '30%', textAlign: 'center' }}>
+              <CardContent>
+                <div style={{ fontSize: '34px' }}>{userData.totalViews}</div>
+                <CardTitle className='text-muted-foreground text-lg'>Views</CardTitle>
+              </CardContent>
+            </Card>
+            <Card className="ml-7" style={{ width: '30%', textAlign: 'center' }}>
+              <CardContent>
+                <div style={{ fontSize: '34px' }}>{userData.totalVideos}</div>
+                <CardTitle className='text-muted-foreground text-lg'>Videos</CardTitle>
+              </CardContent>
+            </Card>
           </div>
         </div>
         <Separator className="my-5" />

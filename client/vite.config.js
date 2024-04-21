@@ -3,13 +3,14 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
 export default defineConfig({
+  assetsInclude: ['**/*.zip'],
   plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
   optimizeDeps: {
     exclude: ['js-big-decimal']
-    }
-  },
+  }
 })

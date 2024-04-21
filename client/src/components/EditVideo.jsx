@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { HiOutlinePencilAlt } from "react-icons/hi";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import VideoDeleteButton from "@/components/Delete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { TagsInput } from "react-tag-input-component";
 import { useToast } from "@/components/ui/use-toast";
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 
 function EditVideo({ videoID, refreshData }) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [tags, setTags] = useState([]);
+    const [publicVideo, setPublicVideo] = useState([]);
+
     const { toast } = useToast();
 
 
@@ -30,6 +34,8 @@ function EditVideo({ videoID, refreshData }) {
                     setTitle(data.title);
                     setDescription(data.description);
                     setTags(data.tags || []);
+                    setPublicVideo(data.publicVideo)
+                    console.log(data.publicVideo)
                 } else {
                     console.error('Failed to fetch video details');
                 }
@@ -54,6 +60,7 @@ function EditVideo({ videoID, refreshData }) {
                     title,
                     description,
                     tags,
+                    publicVideo
                 }),
             });
 
@@ -77,7 +84,7 @@ function EditVideo({ videoID, refreshData }) {
         <div>
             <Sheet>
                 <SheetTrigger>
-                    <HiOutlinePencilAlt className='ml-5 mt-1' size={18} />
+                    <HiOutlinePencilAlt size={18} />
                 </SheetTrigger>
                 <SheetContent side="left">
                     <SheetHeader>
@@ -106,13 +113,23 @@ function EditVideo({ videoID, refreshData }) {
                                 name="Tags"
                                 placeHolder="Enter Tags"
                             />
+                            <div className="flex items-center space-x-2 mt-4">
+                            <Label htmlFor="Public Video">Public Video</Label>
+                            <Switch
+                                checked={publicVideo}
+                                onCheckedChange={setPublicVideo}
+                            />
+                            </div>
+                
                             <div className="flex items-center space-x-2 mt-5">
                                 <div className="grid flex-1 gap-2">
                                     <VideoDeleteButton videoID={videoID} refreshData={refreshData} />
                                 </div>
+                                <SheetClose>
                                 <div className="grid flex-1 gap-2">
                                     <Button onClick={saveChanges}>Save Changes</Button>
                                 </div>
+                                </SheetClose>
                             </div>
                         </SheetDescription>
                     </SheetHeader>

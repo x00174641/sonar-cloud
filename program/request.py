@@ -104,6 +104,7 @@ def upload_video_to_s3(local_video_file_path, s3_key):
         
         try:
             response_data = response.json()
+            print(response_data)
         except ValueError as e:
             logger.error("Error parsing JSON:", e)
 

@@ -81,12 +81,26 @@
 }
 
 .bg-gradient {
-  background: radial-gradient(ellipse 100% 100% at 0 100%, rgba(119, 232, 208, .15), rgba(232, 119, 175, 0)),
-    radial-gradient(ellipse 40% 100% at 60% -10%, rgba(119, 138, 232, .3), rgba(119, 138, 232, 0));
+  background: radial-gradient(ellipse 100% 100% at 0 100%,rgba(119,232,208,.15),rgba(206, 90, 148, 0));
   background-repeat: no-repeat;
   background-size: cover;
 }
-
+.bg-gradient-2 {
+  background: linear-gradient(120deg, #754696, #5b66a7);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.bg-gradient-3 {
+  background-color: #0a0f20;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.glass {
+  background: linear-gradient(135deg, rgba(255,255,255,0), rgba(255,255,255,0));
+  backdrop-filter: blur(10px);
+  border-radius: calc(var(--radius) - 2px) !important;
+  border: 1px solid white;
+}
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -125,7 +139,7 @@
   font-size: 4em;
   white-space: pre-line;
   display: block;
-  margin-top: 150px;
+  margin-top: 200px;
 }
 
 section {
@@ -178,7 +192,7 @@ section {
 
   .type-animation {
     font-size: 2em !important;
-    margin-top: 50px;
+    margin-top: 140px;
   }
 
   .arrow-style {

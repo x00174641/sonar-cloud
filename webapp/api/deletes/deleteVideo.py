@@ -1,8 +1,5 @@
 import boto3
 import os
-import hmac
-import hashlib
-import base64
 import jwt
 from flask import request, jsonify
 from boto3.dynamodb.conditions import Attr
@@ -25,18 +22,26 @@ def delete_video():
     try:
         decoded = jwt.decode(token, options={"verify_signature": False})
         username = decoded.get('username')
-        
+
+        video_scan = table.scan(FilterExpression=Attr('videoID').contains(video_id))
+        video_items = video_scan.get('Items', [])
         response = user_profile_table.scan(
-            FilterExpression=Attr('channelName').contains("@" +username)
+            FilterExpression=Attr('channelName').contains("@" + username)
         )
         items = response.get('Items', [])
+        if username != video_items[0].get('owner').lower() and items[0].get('admin') != True: 
+            return jsonify({'error': 'Cannot delete that video as youre not the video owner.'}), 403
         
+        response2 = user_profile_table.scan(
+            FilterExpression=Attr('channelName').contains("@" + video_items[0].get('owner').lower())
+        )
+
+        items2 = response2.get('Items', [])
+
         if not items:
             return jsonify({"error": "User not found."}), 404
 
-        user_profile = items[0]
-        if 'videos' not in user_profile or video_id not in user_profile['videos']:
-            return jsonify({"error": "Video ID not found in user's profile."}), 404
+        user_profile = items2[0]
         
         video_index = user_profile['videos'].index(video_id)
         

@@ -25,6 +25,10 @@ def postComment():
     data = request.json
     video_id = data.get('videoID')
     comment = data.get('comment')
+
+    if not comment.strip():
+        return jsonify({'error': 'Empty comment cannot be submitted.'})
+
     print(video_id)
     decoded = jwt.decode(token, options={"verify_signature": False})
     username = decoded.get('username')

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FaCopy, FaChartLine } from "react-icons/fa";
 import { bouncy } from 'ldrs'
+import useJwtDecode from '../hooks/TokenDecoder';
 
 function useUserChannelVideos(username) {
     const [videoList, setVideoList] = useState([]);
@@ -79,33 +80,52 @@ function UserChannelGet() {
     }
 
     return (
-        <div className="relative flex flex-wrap">
-            {videoList.map((videoID, index) => (
-                <Video key={index} videoID={videoID} />
-            ))}
-            {videoListLoading && <LoadingOverlay />}
-        </div>
+        <main className="container mx-auto py-8 px-4 md:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {videoList.map((videoID, index) => (
+            <Video key={index} videoID={videoID} />
+          ))}
+        {videoListLoading && <LoadingOverlay />}
+      </main>
+      
     );
 }
 
 function Video({ videoID }) {
     const { videoInfo, loading: videoInfoLoading, error: videoInfoError } = useVideoInfo(videoID);
+    const token = localStorage.getItem('accessToken');
+    const decodedToken = useJwtDecode(token);
+
+    const incrementView = async () => {
+        try {
+            await fetch(`https://api.clipr.solutions/view_increment/${videoID}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ videoID, username: decodedToken.username  })
+            });
+        } catch (error) {
+            console.error('Error incrementing view:', error);
+        }
+    };
 
     if (videoInfoError) {
         return <div>Error: {videoInfoError.message}</div>;
     }
 
     return (
-        <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-2">
+        <div onClick={incrementView}>
             <Dialog>
                 <DialogTrigger asChild>
                     <Card>
+                        <div className='aspect-video rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-800'>
                         <video
-                            className='rounded-lg'
+                            className='cursor-pointer w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
                         >
                             <source src={`https://cliprbucket.s3.amazonaws.com/videos/${videoID}`} />
                             Your browser does not support the video tag.
                         </video>
+                        </div>
                     </Card>
                 </DialogTrigger>
                 <CardDescription>
@@ -166,7 +186,5 @@ function LoadingOverlay() {
         </div>
     );
 }
-
-
 
 export default UserChannelGet;

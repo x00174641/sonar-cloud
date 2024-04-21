@@ -35,7 +35,7 @@ def create_user(username, email, password):
             UserAttributes=user_attributes,
             SecretHash=secret_hash
         )
-        table.put_item(Item={'username': username, 'channelName': "@" + username.lower() ,'email': email, 'videos': [], 'admin': False})
+        table.put_item(Item={'username': username, 'channelName': "@" + username.lower() ,'email': email, 'videos': [], 'admin': False, 'followers': [], 'obs_port': 4455, 'clip_interval': 30, 'clip_hotkey': "F2"})
         return jsonify({'message': 'Account created successfully. Please check your email to verify your account.'}), 200
     except ClientError as e:
         return jsonify(f"{e}"), 403
