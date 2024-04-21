@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FaCopy, FaChartLine } from "react-icons/fa";
 import { bouncy } from 'ldrs'
+import useJwtDecode from '../hooks/TokenDecoder';
 
 function useUserChannelVideos(username) {
     const [videoList, setVideoList] = useState([]);

@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import Chart from "chart.js/auto";
 import useFollowUser from '../hooks/FollowUser';
 import { Button } from '@/components/ui/button'
+import useJwtDecode from '../hooks/TokenDecoder';
 
 function LineChart({ viewsData }) {
   useEffect(() => {
