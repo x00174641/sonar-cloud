@@ -12,4 +12,7 @@ def test_statistics(api_url):
     data = response.json()
     assert 'totalVideosClipped' in data
     assert 'totalClips_Today' in data
+    assert 'total_users' in data
+    assert 'total_views' in data
+    assert 'users' in data
 

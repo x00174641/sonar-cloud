@@ -23,7 +23,7 @@ def upload_video_to_s3_bucket():
         profile_table = dynamodb.Table('cliprDB')
         videos_table = dynamodb.Table('cliprVideoDB')
 
-        file = request.files['file_content']
+        file = request.files['file']  # Corrected from request.files['file_content']
         accessToken = request.form['accessToken']
         file_name = request.form['file_name'].replace('videos/', '')
         decoded = jwt.decode(accessToken, options={"verify_signature": False})
