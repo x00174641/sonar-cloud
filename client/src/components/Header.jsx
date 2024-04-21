@@ -63,7 +63,7 @@ const Header = ({ children }) => {
                 <Input
                     type="text"
                     placeholder="Search..."
-                    className="px-4 py-2 rounded-md focus:outline-none w-full bg-transparent"
+                    className="px-4 py-2 w-full bg-transparent"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />

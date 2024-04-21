@@ -12,7 +12,7 @@ import Container2 from './ui/Container2.jsx';
 import OBS from '../assets/obs.jpg'
 import Untitled from '../assets/Untitled.mp4'
 import { Input } from "@/components/ui/input"
-
+import Software from "../assets/CliprSoftware.zip"
 function HomePage() {
     const { data } = useFetchStatistics();
     const cardData = [
@@ -60,7 +60,7 @@ function HomePage() {
 
                     <small className='text-muted-foreground text-lg'>Clipr is a user-friendly tool for recording and trimming content, enabling users to capture and share highlights effortlessly via generated as.</small>
                     <br></br>
-                    <Button style={{ fontSize: "28px" }} size="xl">Download For Windows &#8201; <FaWindows /></Button>
+                    <a href={Software} download="CliprSoftware.zip"><Button style={{ fontSize: "28px" }} size="xl">Download For Windows &#8201; <FaWindows /></Button></a>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '120px' }}>
                         {cardData.map((item, index) => (

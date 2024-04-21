@@ -96,11 +96,10 @@
   background-size: cover;
 }
 .glass {
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+  background: linear-gradient(135deg, rgba(255,255,255,0), rgba(255,255,255,0));
   backdrop-filter: blur(10px);
   border-radius: calc(var(--radius) - 2px) !important;
   border: 1px solid white;
-  -webkit-backdrop-filter: blur(10px);
 }
 ::-webkit-scrollbar {
   width: 8px;
